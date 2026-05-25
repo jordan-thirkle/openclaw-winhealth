@@ -2,217 +2,308 @@
 <html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WinHealth Dashboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WinHealth v2.0 — Live Gateway Monitor</title>
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --border: #1e1e2e;
-    --text: #e4e4ef;
-    --text-secondary: #8888a0;
-    --green: #22c55e;
-    --yellow: #eab308;
-    --red: #ef4444;
-    --blue: #3b82f6;
-    --purple: #8b5cf6;
-    --accent: #06b6d4;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    min-height: 100vh;
-    transition: all 0.3s;
-  }
-  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-  
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.5rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem;
-  }
-  header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
-  header .status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
-  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-  
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
-  
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: border-color 0.3s;
-  }
-  .card:hover { border-color: var(--accent); }
-  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-weight: 600; }
-  .card-icon { font-size: 1.25rem; }
-  
-  .metric-value { font-size: 2rem; font-weight: 700; letter-spacing: -1px; line-height: 1.2; }
-  .metric-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; }
-  
-  .health-ok { color: var(--green); }
-  .health-warn { color: var(--yellow); }
-  .health-crit { color: var(--red); }
-  
-  .bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 0.75rem; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease, background 0.5s; }
-  .bar-fill.green { background: var(--green); }
-  .bar-fill.yellow { background: var(--yellow); }
-  .bar-fill.red { background: var(--red); }
-  .bar-fill.blue { background: var(--blue); }
-  
-  .agents { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .agent-tag {
-    padding: 0.25rem 0.75rem; background: rgba(139, 92, 246, 0.15);
-    border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 20px;
-    font-size: 0.75rem; color: var(--purple);
-  }
-  
-  .alerts-panel { margin-top: 2rem; }
-  .alert-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 1rem 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;
-    transition: border-color 0.3s;
-  }
-  .alert-card.warning { border-left: 3px solid var(--yellow); }
-  .alert-card.critical { border-left: 3px solid var(--red); }
-  .alert-card.info { border-left: 3px solid var(--blue); }
-  
-  .refresh-time { font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 2rem; }
-  
-  .footer { text-align: center; padding: 2rem 0; color: var(--text-secondary); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: 3rem; }
-  .footer a { color: var(--accent); text-decoration: none; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
+
+:root {
+  --bg: #09090b; --surface: #121214; --surface-hover: #1a1a1f;
+  --border: #1e1e24; --border-active: #2a2a35;
+  --text: #f4f4f5; --text-muted: #71717a; --text-dim: #52525b;
+  --green: #10b981; --green-bg: rgba(16,185,129,0.12);
+  --yellow: #f59e0b; --yellow-bg: rgba(245,158,11,0.12);
+  --red: #ef4444; --red-bg: rgba(239,68,68,0.12);
+  --blue: #3b82f6; --blue-bg: rgba(59,130,246,0.12);
+  --purple: #8b5cf6; --purple-bg: rgba(139,92,246,0.12);
+  --accent: #06b6d4; --accent-bg: rgba(6,182,212,0.12);
+  --radius: 16px; --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(0,0,0,0.4);
+  --font: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono: 'SF Mono','Fira Code','Consolas',monospace;
+}
+body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; line-height:1.5 }
+.container { max-width:1440px; margin:0 auto; padding:2rem }
+
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:1.25rem 0; border-bottom:1px solid var(--border); margin-bottom:2rem }
+.topbar-left { display:flex; align-items:center; gap:0.75rem }
+.logo { width:40px; height:40px; background:var(--accent-bg); border:1px solid rgba(6,182,212,0.3); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.25rem }
+.topbar h1 { font-size:1.25rem; font-weight:700; letter-spacing:-0.3px }
+.topbar-sub { font-size:0.75rem; color:var(--text-muted); margin-top:1px }
+.status-pill { display:flex; align-items:center; gap:0.5rem; padding:0.5rem 1rem; border-radius:100px; font-size:0.8rem; font-weight:600; letter-spacing:0.02em }
+.status-ok { background:var(--green-bg); color:var(--green); border:1px solid rgba(16,185,129,0.2) }
+.status-warn { background:var(--yellow-bg); color:var(--yellow); border:1px solid rgba(245,158,11,0.2) }
+.status-crit { background:var(--red-bg); color:var(--red); border:1px solid rgba(239,68,68,0.2) }
+.status-dot { width:8px; height:8px; border-radius:50% }
+.status-dot.green { background:var(--green); box-shadow:0 0 8px rgba(16,185,129,0.5) }
+.status-dot.yellow { background:var(--yellow); box-shadow:0 0 8px rgba(245,158,11,0.5) }
+.status-dot.red { background:var(--red); box-shadow:0 0 8px rgba(239,68,68,0.5) }
+
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1rem; margin-bottom:1.5rem }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; transition:all 0.2s; box-shadow:var(--shadow) }
+.card:hover { border-color:var(--border-active); transform:translateY(-1px) }
+.card-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem }
+.card-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); font-weight:700 }
+.card-icon { font-size:1.15rem; opacity:0.7 }
+.metric-value { font-size:2.5rem; font-weight:800; letter-spacing:-1.5px; line-height:1; margin-bottom:0.25rem; font-family:var(--mono) }
+.metric-unit { font-size:1rem; font-weight:500; color:var(--text-muted) }
+.metric-sub { font-size:0.75rem; color:var(--text-dim); margin-top:0.25rem }
+.ok { color:var(--green) } .warn { color:var(--yellow) } .crit { color:var(--red) }
+.progress-bar { height:5px; background:var(--border); border-radius:3px; margin-top:0.75rem; overflow:hidden }
+.progress-fill { height:100%; border-radius:3px; transition:width 0.8s cubic-bezier(.4,0,.2,1),background 0.5s }
+.progress-fill.green { background:linear-gradient(90deg,var(--green),#34d399) }
+.progress-fill.yellow { background:linear-gradient(90deg,var(--yellow),#fbbf24) }
+.progress-fill.red { background:linear-gradient(90deg,var(--red),#f87171) }
+.progress-fill.blue { background:linear-gradient(90deg,var(--blue),#60a5fa) }
+
+.agents-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem }
+.agent-tag { padding:0.35rem 0.85rem; background:var(--purple-bg); border:1px solid rgba(139,92,246,0.25); border-radius:100px; font-size:0.75rem; color:var(--purple); font-weight:500 }
+.agent-tag .count { font-size:0.65rem; opacity:0.7; margin-left:0.35rem }
+
+.alert-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:1rem 1.25rem; margin-bottom:0.5rem; display:flex; align-items:center; gap:1rem; transition:all 0.2s }
+.alert-card:hover { border-color:var(--border-active) }
+.alert-card.warning { border-left:3px solid var(--yellow) }
+.alert-card.critical { border-left:3px solid var(--red) }
+.alert-card.info { border-left:3px solid var(--blue) }
+.alert-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0 }
+.alert-icon.warn { background:var(--yellow-bg) }
+.alert-icon.crit { background:var(--red-bg) }
+.alert-body { flex:1; min-width:0 }
+.alert-title { font-weight:600; font-size:0.85rem }
+.alert-time { font-size:0.7rem; color:var(--text-dim); margin-top:2px }
+.alert-dismiss { padding:0.4rem 0.8rem; border-radius:8px; font-size:0.7rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-family:var(--font) }
+.alert-dismiss:hover { background:var(--surface-hover); color:var(--text) }
+
+.empty-state { text-align:center; padding:3rem; color:var(--text-dim) }
+.empty-state-icon { font-size:2.5rem; margin-bottom:1rem }
+.gauges { display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap; margin:1rem 0 }
+
+.gauge { position:relative; width:120px; height:120px }
+.gauge svg { transform:rotate(-90deg) }
+.gauge-bg { fill:none; stroke:var(--border); stroke-width:8 }
+.gauge-fill { fill:none; stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1),stroke 0.5s }
+.gauge-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center }
+.gauge-value { font-size:1.5rem; font-weight:800; font-family:var(--mono); line-height:1 }
+.gauge-label { font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px }
+
+.footer { text-align:center; padding:2rem; color:var(--text-dim); font-size:0.7rem; border-top:1px solid var(--border); margin-top:2rem }
+.footer a { color:var(--accent); text-decoration:none }
+.refresh-dot { display:inline-block; width:6px; height:6px; background:var(--green); border-radius:50%; margin-right:6px; animation:pulse 2s infinite }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.fade-in { animation:fadeIn 0.5s ease }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.token-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center }
+.token-modal.active { display:flex }
+.token-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; max-width:420px; width:90% }
+.token-box h2 { font-size:1.25rem; margin-bottom:1rem }
+.token-box input { width:100%; padding:0.75rem 1rem; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font); font-size:0.9rem; margin-bottom:1rem; outline:none }
+.token-box input:focus { border-color:var(--accent) }
+.token-box button { width:100%; padding:0.75rem; background:var(--accent); color:var(--bg); border:none; border-radius:var(--radius-sm); font-weight:700; cursor:pointer; font-family:var(--font); font-size:0.9rem }
+.token-box .hint { font-size:0.75rem; color:var(--text-dim); margin-bottom:1rem }
+.hidden { display:none }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div>
-      <h1>🩺 WinHealth Dashboard</h1>
-      <p style="color:var(--text-secondary);font-size:0.875rem;margin-top:0.25rem">OpenClaw Gateway Health Monitor</p>
-    </div>
-    <div class="status">
-      <div class="status-dot" id="status-dot"></div>
-      <span id="status-text">--</span>
-    </div>
-  </header>
 
-  <div class="grid" id="metrics-grid">
-    <!-- Populated by JS -->
+<div class="token-modal active" id="auth-modal">
+  <div class="token-box">
+    <h2>🔐 Gateway Auth</h2>
+    <p class="hint">Enter your gateway token. Stored locally, never sent anywhere except your gateway.</p>
+    <input type="password" id="token-input" placeholder="Paste your gateway token..." autocomplete="off">
+    <button onclick="connect()">Connect</button>
+  </div>
+</div>
+
+<div class="container" id="dashboard" style="display:none">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">🩺</div>
+      <div>
+        <h1>WinHealth v2.0</h1>
+        <div class="topbar-sub" id="last-update">--</div>
+      </div>
+    </div>
+    <div class="status-pill status-ok" id="status-pill">
+      <span class="status-dot green" id="status-dot"></span>
+      <span id="status-text">CONNECTING</span>
+    </div>
   </div>
 
-  <div class="alerts-panel">
-    <h2 style="font-size:1.25rem;margin-bottom:1rem">Recent Alerts</h2>
-    <div id="alerts-container">
-      <div class="alert-card info">
-        <span style="color:var(--green)">✅</span>
-        <span>All clear — no active alerts</span>
+  <div class="gauges" id="gauges-row"></div>
+
+  <div class="grid" id="metrics-grid"></div>
+
+  <div class="grid-2" id="bottom-row">
+    <div class="card">
+      <div class="card-header"><span class="card-label">Active Agents</span><span class="card-icon">🤖</span></div>
+      <div class="agents-row" id="agents-row"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-label">Channel Status</span><span class="card-icon">💬</span></div>
+      <div id="channels-row"></div>
+    </div>
+  </div>
+
+  <div style="margin:1.5rem 0">
+    <h2 style="font-size:1rem;font-weight:700;margin-bottom:1rem">Alert History</h2>
+    <div id="alerts-row">
+      <div class="empty-state">
+        <div class="empty-state-icon">✅</div>
+        <p>All clear — no active alerts</p>
       </div>
     </div>
   </div>
-  
-  <p class="refresh-time" id="refresh-time">--</p>
+
+  <div class="footer">
+    <span class="refresh-dot"></span> Auto-refreshing every 3s · 
+    <a href="https://github.com/jordan-thirkle/openclaw-winhealth">GitHub</a> · 
+    <a href="https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth">ClawHub</a>
+  </div>
 </div>
 
-<footer class="footer">
-  <p>WinHealth Dashboard v1.2.0 · <a href="https://github.com/jordan-thirkle/openclaw-winhealth">GitHub</a> · <a href="https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth">ClawHub</a></p>
-</footer>
-
 <script>
+const GAUGE_CIRCUMFERENCE = 2 * Math.PI * 42;
+
+function gaugeHTML(label, value, max, unit, colorClass) {
+  const pct = Math.min(100, (value / max) * 100);
+  const offset = GAUGE_CIRCUMFERENCE - (pct / 100) * GAUGE_CIRCUMFERENCE;
+  return `<div class="gauge">
+    <svg viewBox="0 0 100 100" width="120" height="120">
+      <circle class="gauge-bg" cx="50" cy="50" r="42"/>
+      <circle class="gauge-fill ${colorClass}" cx="50" cy="50" r="42" stroke-dasharray="${GAUGE_CIRCUMFERENCE}" stroke-dashoffset="${offset}"/>
+    </svg>
+    <div class="gauge-center"><span class="gauge-value">${value.toFixed(0)}</span><span class="gauge-label">${unit}</span></div>
+  </div>
+  <div style="text-align:center;margin-top:0.5rem"><span style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">${label}</span></div>`;
+}
+
+function metricCard(label, value, unit, subtitle, barPct, barClass) {
+  return `<div class="card fade-in">
+    <div class="card-header"><span class="card-label">${label}</span><span class="card-icon">&#9670;</span></div>
+    <div class="metric-value ${barClass || ''}">${value}<span class="metric-unit">${unit}</span></div>
+    <div class="metric-sub">${subtitle}</div>
+    ${barPct !== undefined ? `<div class="progress-bar"><div class="progress-fill ${barClass}" style="width:${Math.min(100,barPct)}%"></div></div>` : ''}
+  </div>`;
+}
+
+let alertHistory = [];
+function addAlert(type, severity, message) {
+  const key = type + '|' + severity;
+  const existing = alertHistory.findIndex(a => a.key === key);
+  const entry = { key, type, severity, message, time: new Date().toLocaleTimeString() };
+  if (existing >= 0) alertHistory[existing] = entry;
+  else alertHistory.unshift(entry);
+  if (alertHistory.length > 20) alertHistory.pop();
+}
+
 async function fetchHealth() {
-  const token = prompt("Enter your OpenClaw gateway token:", localStorage.getItem("gw_token") || "");
-  if (!token) return;
-  localStorage.setItem("gw_token", token);
-  
+  const token = localStorage.getItem('gw_token');
+  if (!token) return document.getElementById('auth-modal').classList.add('active');
   try {
-    const res = await fetch("http://127.0.0.1:18789/health", {
-      headers: { "Authorization": "Bearer " + token }
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    updateDashboard(data);
+    const r = await fetch('http://127.0.0.1:18789/health', { headers: {'Authorization':'Bearer '+token} });
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
   } catch(e) {
-    document.getElementById("status-dot").style.background = "var(--red)";
-    document.getElementById("status-text").textContent = "Error: " + e.message;
+    updateStatus('crit','ERROR','red');
+    return null;
   }
 }
 
-function updateDashboard(data) {
+function updateStatus(level, text, color) {
+  document.getElementById('status-dot').className = 'status-dot ' + color;
+  document.getElementById('status-text').textContent = text;
+  document.getElementById('status-pill').className = 'status-pill status-' + level;
+}
+
+function render(data) {
+  if (!data) return;
   const el = data.eventLoop || {};
   const p99 = el.delayP99Ms || 0;
   const max = el.delayMaxMs || 0;
-  const util = el.utilization || 0;
+  const util = (el.utilization || 0) * 100;
   const degraded = el.degraded;
-  
-  // Status
-  const dot = document.getElementById("status-dot");
-  const stat = document.getElementById("status-text");
-  if (degraded) { dot.style.background = "var(--red)"; stat.textContent = "DEGRADED";
-  } else if (p99 > 1000) { dot.style.background = "var(--yellow)"; stat.textContent = "WARNING";
-  } else { dot.style.background = "var(--green)"; stat.textContent = "HEALTHY"; }
-
-  const p99Class = p99 > 5000 ? "health-crit" : p99 > 1000 ? "health-warn" : "health-ok";
-  const utilPct = Math.round(util * 100);
-  const utilClass = utilPct > 80 ? "red" : utilPct > 50 ? "yellow" : "green";
-
   const agents = data.agents || [];
-  const wa = data.channels?.whatsapp || "";
-  const waLinked = wa.includes("linked");
-  const waHealthy = wa.includes("healthy");
+  const wa = data.channels?.whatsapp || '';
+  const waOk = wa.includes('healthy');
 
-  document.getElementById("metrics-grid").innerHTML = `
-    <div class="card">
-      <div class="card-header"><span class="card-title">Event Loop P99</span><span class="card-icon">⚡</span></div>
-      <div class="metric-value ${p99Class}">${p99.toFixed(1)}<span style="font-size:1rem;color:var(--text-secondary)">ms</span></div>
-      <div class="metric-label">Threshold: 5000ms</div>
-      <div class="bar"><div class="bar-fill ${p99Class === 'health-ok' ? 'green' : p99Class === 'health-warn' ? 'yellow' : 'red'}" style="width:${Math.min(100,(p99/5000)*100)}%"></div></div>
-    </div>
-    
-    <div class="card">
-      <div class="card-header"><span class="card-title">Event Loop Max</span><span class="card-icon">📊</span></div>
-      <div class="metric-value ${max > 5000 ? 'health-warn' : 'health-ok'}">${max.toFixed(1)}<span style="font-size:1rem;color:var(--text-secondary)">ms</span></div>
-      <div class="metric-label">Largest single frame delay</div>
-    </div>
-    
-    <div class="card">
-      <div class="card-header"><span class="card-title">EL Utilization</span><span class="card-icon">🔄</span></div>
-      <div class="metric-value ${utilPct > 80 ? 'health-crit' : utilPct > 50 ? 'health-warn' : 'health-ok'}">${utilPct}<span style="font-size:1rem;color:var(--text-secondary)">%</span></div>
-      <div class="metric-label">Event loop busy time</div>
-      <div class="bar"><div class="bar-fill ${utilClass}" style="width:${utilPct}%"></div></div>
-    </div>
-    
-    <div class="card">
-      <div class="card-header"><span class="card-title">WhatsApp</span><span class="card-icon">💬</span></div>
-      <div class="metric-value ${waHealthy ? 'health-ok' : 'health-crit'}" style="font-size:1.25rem">
-        ${waLinked ? '✅ Linked' : '❌ Not Linked'}
-      </div>
-      <div class="metric-label">${waHealthy ? 'Connected & Healthy' : 'Check connection'}</div>
-    </div>
-    
-    <div class="card">
-      <div class="card-header"><span class="card-title">Agents Active</span><span class="card-icon">🤖</span></div>
-      <div class="metric-value health-ok">${agents.length}</div>
-      <div class="agents" style="margin-top:0.75rem">${agents.map(a => `<span class="agent-tag">${a}</span>`).join('')}</div>
-    </div>
-    
-    <div class="card">
-      <div class="card-header"><span class="card-title">Degradation</span><span class="card-icon">🔍</span></div>
-      <div class="metric-value ${degraded ? 'health-crit' : 'health-ok'}" style="font-size:1.25rem">
-        ${degraded ? '⚠️ Degraded' : '✅ Healthy'}
-      </div>
-      <div class="metric-label">${degraded ? 'Check winhealth_diagnostics' : 'All systems go'}</div>
-    </div>
-  `;
+  if (degraded) updateStatus('crit','DEGRADED','red');
+  else if (p99 > 1000) updateStatus('warn','WARNING','yellow');
+  else updateStatus('ok','HEALTHY','green');
 
-  document.getElementById("refresh-time").textContent = "Last updated: " + new Date().toLocaleTimeString() + " (auto-refresh every 5s)";
+  const p99Color = p99 > 5000 ? 'crit' : p99 > 1000 ? 'warn' : 'ok';
+  const p99Bar = Math.min(100, (p99 / 5000) * 100);
+  const p99BarColor = p99 > 5000 ? 'red' : p99 > 1000 ? 'yellow' : 'green';
+
+  document.getElementById('gauges-row').innerHTML = 
+    gaugeHTML('P99 Latency', p99, 5000, 'ms', p99Color) +
+    gaugeHTML('EL Utilization', util, 100, '%', util > 80 ? 'red' : util > 50 ? 'yellow' : 'green') +
+    gaugeHTML('Max Spike', max, 10000, 'ms', max > 5000 ? 'warn' : 'ok');
+
+  document.getElementById('metrics-grid').innerHTML =
+    metricCard('Event Loop P99', p99.toFixed(1), 'ms', 'Threshold: 5000ms', p99Bar, p99BarColor) +
+    metricCard('Event Loop Max', max.toFixed(1), 'ms', 'Largest single-frame delay') +
+    metricCard('EL Utilization', util.toFixed(0), '%', util > 80 ? 'High — check for blocking tasks' : 'Normal', util, util > 80 ? 'red' : util > 50 ? 'yellow' : 'green') +
+    metricCard('Degradation', degraded ? '⚠ Yes' : '✓ No', '', degraded ? 'Saturation detected' : 'All clear') +
+    metricCard('WhatsApp', waOk ? '✓ Connected' : '✗ Disconnected', '', wa ? wa.substring(0, 40) : 'Checking...') +
+    metricCard('Agents Active', agents.length.toString(), '', agents.slice(0,3).join(', ') + (agents.length > 3 ? '...' : ''));
+
+  document.getElementById('agents-row').innerHTML = agents.map(a => 
+    `<span class="agent-tag">${a}<span class="count"></span></span>`).join('') ||
+    '<span style="color:var(--text-dim);font-size:0.85rem">No agents detected</span>';
+
+  document.getElementById('channels-row').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <span style="font-size:1.2rem">${waOk ? '✅' : '❌'}</span>
+        <div><div style="font-weight:600;font-size:0.85rem">WhatsApp</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">${waOk ? 'Connected & healthy' : 'Disconnected'}</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <span style="font-size:1.2rem">🤖</span>
+        <div><div style="font-weight:600;font-size:0.85rem">Gateway</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">API responding · ${el.delayMaxMs || 0}ms max delay</div></div>
+      </div>
+    </div>`;
+
+  if (degraded || !waOk) {
+    addAlert('event_loop', degraded ? 'critical' : 'warning', degraded ? `Event loop degraded — p99: ${p99.toFixed(0)}ms` : 'Channel connectivity issue');
+  }
+
+  if (alertHistory.length > 0) {
+    document.getElementById('alerts-row').innerHTML = alertHistory.slice(0, 8).map(a => `
+      <div class="alert-card ${a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info'}">
+        <div class="alert-icon ${a.severity === 'critical' ? 'crit' : 'warn'}">${a.severity === 'critical' ? '🔴' : '⚠️'}</div>
+        <div class="alert-body">
+          <div class="alert-title">${a.message}</div>
+          <div class="alert-time">${a.time}</div>
+        </div>
+        <button class="alert-dismiss" onclick="this.parentElement.remove()">Dismiss</button>
+      </div>`).join('');
+  }
+
+  document.getElementById('last-update').textContent = 'Updated ' + new Date().toLocaleTimeString() + ' · v1.3.0';
 }
 
-fetchHealth();
-setInterval(fetchHealth, 5000);
+function connect() {
+  const token = document.getElementById('token-input').value.trim();
+  if (!token) return;
+  localStorage.setItem('gw_token', token);
+  document.getElementById('auth-modal').classList.remove('active');
+  document.getElementById('dashboard').style.display = 'block';
+  fetchHealth().then(render);
+  setInterval(() => fetchHealth().then(render), 3000);
+}
+
+const saved = localStorage.getItem('gw_token');
+if (saved) {
+  document.getElementById('token-input').value = saved;
+  document.getElementById('auth-modal').classList.remove('active');
+  document.getElementById('dashboard').style.display = 'block';
+  fetchHealth().then(render);
+  setInterval(() => fetchHealth().then(render), 3000);
+}
 </script>
 </body>
 </html>
