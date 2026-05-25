@@ -25,7 +25,7 @@ OpenClaw gateways can experience performance regressions across all platforms. A
 - **CLI vs HTTP delta** — the key discovery: CLI tool can be 20-30x slower than HTTP endpoint on Windows
 
 ### 🚨 Alerts
-- WhatsApp alerts when thresholds breach
+- WhatsApp and Telegram alerts when thresholds breach
 - Configurable thresholds (event loop p99, memory RSS)
 - Alert management (list, dismiss, clear)
 - Auto-diagnose on critical alerts
@@ -48,7 +48,7 @@ OpenClaw gateways can experience performance regressions across all platforms. A
 
 - OpenClaw ≥ 2026.5.0
 - Node.js ≥ 22.19
-- Windows 10/11 (native or WSL2)
+- Windows 10/11, Linux, or macOS
 
 ### Install the Plugin
 
@@ -171,7 +171,7 @@ Consider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1
 [WARNING] Provider auth prewarm slow: 68000ms. Consider OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1
 ```
 
-## Known Windows Issues This Detects
+## Known Issues This Detects
 
 | Issue | Detection |
 |---|---|
@@ -233,7 +233,6 @@ Issues and PRs welcome. Before submitting:
 
 ## Related Projects
 
-- [OpenClaw PR #86245](https://github.com/openclaw/openclaw/pull/86245) — Env var to skip provider auth prewarm
 - [OpenClaw-Viz PR #3](https://github.com/sltogethertao-sudo/openclaw-viz/pull/3) — Fix calver compatibility
 - [OpenClaw Issue #85999](https://github.com/openclaw/openclaw/issues/85999) — Prewarm event loop blocking
 

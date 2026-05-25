@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] — 2026-05-25
+
+### Fixed
+- Updated prerequisites to cross-platform (Windows, Linux, macOS)
+- Renamed "Known Windows Issues" → "Known Issues" for accuracy
+- Added Telegram to alert descriptions in README
+- Removed closed PR #86245 from Related Projects
+- Fixed SKILL.md section numbering and removed Windows-only language
+- Professional health dashboard with live data (dashboard/index.html)
+
 ## [1.2.0] — 2026-05-25
 
 ### Added

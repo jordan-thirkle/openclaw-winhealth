@@ -68,7 +68,7 @@ Get-ScheduledTask -TaskName "OpenClaw Gateway" | Format-List State, LastRunTime,
 **Degraded**: State=Running but gateway unresponsive → stuck restart, kill node processes and restart
 **Failed**: LastTaskResult non-zero → check gateway log for errors
 
-### 2. Event Loop Degradation (The #1 Windows Issue)
+### 2. Event Loop Degradation
 
 The most common Windows performance regression appears in 2026.5.x:
 
