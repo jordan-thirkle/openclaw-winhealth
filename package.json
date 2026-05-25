@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jordan-thirkle/openclaw-winhealth#readme",
   "openclaw": {
-    "extensions": ["./index.ts"],
+    "extensions": ["./index.js"],
     "compat": {
       "pluginApi": ">=2026.5.0",
       "minGatewayVersion": "2026.5.0"
