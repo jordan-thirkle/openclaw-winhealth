@@ -31,12 +31,18 @@
     }
   },
   "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Manual test: openclaw plugins install . && openclaw plugins inspect winhealth --runtime\"",
     "publish:clawhub": "clawhub package publish jordan-thirkle/openclaw-winhealth",
     "publish:clawhub:dry": "clawhub package publish jordan-thirkle/openclaw-winhealth --dry-run"
   },
+  "dependencies": {},
   "devDependencies": {
-    "typebox": "^0.34.0"
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.5.0"
   },
   "engines": {
     "node": ">=22.19.0"

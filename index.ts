@@ -12,7 +12,6 @@
  * @author Jordan Thirkle
  */
 
-import { Type } from "typebox";
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 
 import { registerHealthCheckTool } from "./tools/health-check.js";

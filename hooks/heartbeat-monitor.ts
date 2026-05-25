@@ -144,23 +144,33 @@ async function runHealthCheck(
       const latestAlerts = activeAlerts.slice(-3);
 
       const alertText =
-        `⚠️ OpenClaw Health Alert\n` +
+        `\u26A0\uFE0F OpenClaw Health Alert\n` +
         latestAlerts
           .map((a) => `[${a.severity.toUpperCase()}] ${a.message}`)
           .join("\n") +
         `\n\nRun 'winhealth_check' or 'winhealth_diagnostics' for details.` +
-        (config.checkPrewarm !== false ? `\n\nConsider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1` : "");
+        (config.checkPrewarm !== false
+          ? `\n\nConsider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1`
+          : "");
 
       try {
+        // Use system.runCommandWithTimeout for cross-SDK-version compatibility
         if (config.alertChannel === "whatsapp") {
-          await api.runtime.message.send({
-            channel: "whatsapp",
-            target: config.alertTarget,
-            message: alertText,
-          });
+          await api.runtime.system.runCommandWithTimeout(
+            "openclaw",
+            [
+              "message", "send",
+              "--channel", "whatsapp",
+              "--target", config.alertTarget,
+              "--message", alertText,
+            ],
+            { timeoutMs: 15000 },
+          );
         }
       } catch (err: any) {
-        api.logger.warn(`winhealth: alert delivery failed: ${err.message}`);
+        api.logger.warn(
+          `winhealth: alert delivery failed: ${err.message}`,
+        );
       }
     }
   } catch (err: any) {
