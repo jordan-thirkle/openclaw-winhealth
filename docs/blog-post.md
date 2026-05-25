@@ -75,7 +75,7 @@ openclaw plugins install clawhub:@jordan-thirkle/openclaw-winhealth
           "pollIntervalMinutes": 5,
           "eventLoopThresholdMs": 5000,
           "alertChannel": "whatsapp",
-          "alertTarget": "+447916129951"
+          "alertTarget": "+15555550123"
         }
       }
     }

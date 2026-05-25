@@ -81,7 +81,7 @@ Add to your `openclaw.json`:
           "eventLoopThresholdMs": 5000,
           "memoryThresholdMB": 1024,
           "alertChannel": "whatsapp",
-          "alertTarget": "+447916129951",
+          "alertTarget": "+15555550123",
           "autoDiagnose": true,
           "checkPrewarm": true,
           "checkWindowsTask": true,
