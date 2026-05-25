@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenClaw Command Center</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#09090b;--surface:#121214;--surface-hover:#1a1a1f;
+  --border:#1e1e24;--border-active:#2a2a35;
+  --text:#f4f4f5;--text-muted:#71717a;--text-dim:#52525b;
+  --green:#10b981;--green-bg:rgba(16,185,129,0.12);
+  --yellow:#f59e0b;--yellow-bg:rgba(245,158,11,0.12);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.12);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,0.12);
+  --purple:#8b5cf6;--purple-bg:rgba(139,92,246,0.12);
+  --accent:#06b6d4;--accent-bg:rgba(6,182,212,0.12);
+  --radius:14px;--radius-sm:8px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+.container{max-width:1400px;margin:0 auto;padding:1.5rem}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.topbar h1{font-size:1.1rem;font-weight:700}
+.status-row{display:flex;gap:1rem;align-items:center}
+.stat{display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;font-weight:600}
+.stat-dot{width:7px;height:7px;border-radius:50%}
+.dot-green{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,0.4)}
+.dot-yellow{background:var(--yellow)}
+.dot-red{background:var(--red)}
+
+.columns{display:grid;grid-template-columns:1fr 340px;gap:1rem;margin-bottom:1rem}
+.main-col{display:flex;flex-direction:column;gap:1rem}
+.side-col{display:flex;flex-direction:column;gap:1rem}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.card:hover{border-color:var(--border-active)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.card-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:700}
+
+.metrics-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem}
+.metric{text-align:center}
+.metric-value{font-size:1.5rem;font-weight:800;font-family:var(--mono);line-height:1}
+.metric-label{font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px}
+.ok{color:var(--green)}.warn{color:var(--yellow)}.crit{color:var(--red)}
+
+.repo-link{display:block;padding:0.6rem 0.85rem;border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text);text-decoration:none;transition:all 0.15s;margin-bottom:0.25rem}
+.repo-link:hover{background:var(--surface-hover)}
+.repo-link .name{font-weight:600}
+.repo-link .detail{font-size:0.65rem;color:var(--text-dim);display:block}
+.repo-link .status-badge{font-size:0.6rem;padding:2px 6px;border-radius:4px;margin-left:0.5rem}
+.badge-ready{background:var(--green-bg);color:var(--green)}
+.badge-pending{background:var(--yellow-bg);color:var(--yellow)}
+
+.agent-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0;border-bottom:1px solid var(--border)}
+.agent-row:last-child{border-bottom:none}
+.agent-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.85rem}
+.agent-icon.main{background:var(--accent-bg)}
+.agent-icon.code{background:var(--purple-bg)}
+.agent-icon.local{background:var(--green-bg)}
+.agent-name{font-weight:600;font-size:0.8rem}
+.agent-model{font-size:0.65rem;color:var(--text-dim)}
+
+.quick-actions{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem}
+.quick-btn{padding:0.5rem 0.85rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.7rem;font-weight:600;cursor:pointer;background:transparent;color:var(--text);font-family:var(--font);transition:all 0.15s}
+.quick-btn:hover{border-color:var(--accent);background:var(--accent-bg);color:var(--accent)}
+
+.footer{text-align:center;padding:2rem;color:var(--text-dim);font-size:0.7rem;border-top:1px solid var(--border);margin-top:1.5rem}
+.refresh{font-size:0.65rem;color:var(--text-dim)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.pulse-dot{display:inline-block;width:5px;height:5px;background:var(--green);border-radius:50%;margin-right:5px;animation:pulse 2s infinite}
+.alert-item{font-size:0.72rem;padding:0.4rem 0;border-bottom:1px solid var(--border)}
+.alert-item:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:0.75rem">
+      <span style="font-size:1.5rem">🦞</span>
+      <div><h1>OpenClaw Command Center</h1><div style="font-size:0.65rem;color:var(--text-dim);margin-top:1px" id="clock">--</div></div>
+    </div>
+    <div class="status-row">
+      <div class="stat"><span class="stat-dot dot-green" id="gw-dot"></span><span id="gw-text">Checking</span></div>
+      <div class="stat"><span class="stat-dot dot-green" id="wa-dot"></span><span id="wa-text">WA</span></div>
+      <div class="stat"><span id="refresh-text" style="font-size:0.65rem;color:var(--text-dim)">--</span></div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="main-col">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Gateway Health</span></div>
+        <div class="metrics-row" id="health-metrics">
+          <div class="metric"><div class="metric-value" id="m-p99">--</div><div class="metric-label">P99</div></div>
+          <div class="metric"><div class="metric-value" id="m-util">--</div><div class="metric-label">Util %</div></div>
+          <div class="metric"><div class="metric-value" id="m-mem">--</div><div class="metric-label">Memory</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Quick Actions</span></div>
+        <div class="quick-actions">
+          <button class="quick-btn" onclick="window.open('http://127.0.0.1:18789/chat','_blank')">💬 Control UI</button>
+          <button class="quick-btn" onclick="window.open('/__openclaw__/canvas/winhealth/','_blank')">🩺 WinHealth</button>
+          <button class="quick-btn" onclick="checkHealth()">🔄 Refresh</button>
+          <button class="quick-btn" onclick="window.open('https://github.com/jordan-thirkle/openclaw-winhealth','_blank')">📦 GitHub</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Agents</span><span style="font-size:0.7rem;color:var(--text-dim)">🤖</span></div>
+        <div id="agents-list">
+          <div class="agent-row"><div class="agent-icon main">🦞</div><div><div class="agent-name">Main (Claw)</div><div class="agent-model">V4 Pro via Go</div></div></div>
+          <div class="agent-row"><div class="agent-icon code">⌨️</div><div><div class="agent-name">Code (Codex)</div><div class="agent-model">V4 Pro via Go</div></div></div>
+          <div class="agent-row"><div class="agent-icon local">💻</div><div><div class="agent-name">Local (Byte)</div><div class="agent-model">Ollama qwen3:8b</div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Repos</span><span style="font-size:0.7rem;color:var(--text-dim)">9 total</span></div>
+        <div id="repos-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Alerts</span></div>
+        <div id="alerts-list"><div class="alert-item" style="color:var(--green)">✅ No active alerts</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span class="pulse-dot"></span> <span class="refresh">Auto-refresh 5s</span> · Gateway 18789 · Canvas /winhealth · 
+    <a href="https://github.com/jordan-thirkle/openclaw-winhealth" style="color:var(--accent);text-decoration:none">WinHealth v1.3.0</a>
+  </div>
+</div>
+
+<script>
+const REPOS = [
+  {name:'PromptForge',path:'D:/Projects/aiPromptOrganizer',tech:'Next.js',status:'active'},
+  {name:'InkNest',path:'D:/Projects/InkNest',tech:'Vercel',status:'active'},
+  {name:'JordanThirkle.com',path:'D:/Projects/JordanThirkle.com',tech:'Astro',status:'active'},
+  {name:'XbX-API',path:'D:/Projects/XbX-API',tech:'Node',status:'pending'},
+  {name:'aisoundgenerator',path:'D:/Projects/aisoundgenerator',tech:'Vite',status:'pending'},
+  {name:'CrownChaserGame',path:'D:/Projects/CrownChaserGame',tech:'Unity',status:'pending'},
+  {name:'X-Algorithm',path:'D:/Projects/X-Algorithm',tech:'Research',status:'pending'},
+  {name:'VibeGame',path:'D:/Projects/VibeGame',tech:'Browser',status:'pending'},
+  {name:'WhitenoiseApp',path:'D:/Projects/WhitenoiseApp',tech:'Flutter',status:'pending'}
+];
+
+document.getElementById('repos-list').innerHTML = REPOS.map(r => 
+  `<a href="#" class="repo-link">
+    <span class="name">${r.name}</span>
+    <span class="detail">${r.tech}</span>
+  </a>`).join('');
+
+async function checkHealth(){
+  const token = localStorage.getItem('gw_token') || prompt('Gateway token:','');
+  if(!token) return;
+  localStorage.setItem('gw_token',token);
+  try{
+    const r = await fetch('http://127.0.0.1:18789/health',{headers:{'Authorization':'Bearer '+token}});
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    const el = d.eventLoop||{};
+    document.getElementById('m-p99').innerHTML = el.delayP99Ms?el.delayP99Ms.toFixed(0)+'<span style="font-size:0.7rem;color:var(--text-dim)">ms</span>':'--';
+    document.getElementById('m-util').innerHTML = el.utilization?(el.utilization*100).toFixed(0)+'<span style="font-size:0.7rem;color:var(--text-dim)">%</span>':'--';
+    document.getElementById('m-mem').innerHTML = '--';
+    const ok = !el.degraded;
+    document.getElementById('gw-dot').className = 'stat-dot '+(ok?'dot-green':'dot-red');
+    document.getElementById('gw-text').textContent = ok?'HEALTHY':'DEGRADED';
+    const waOk = (d.channels?.whatsapp||'').includes('healthy');
+    document.getElementById('wa-dot').className = 'stat-dot '+(waOk?'dot-green':'dot-yellow');
+    document.getElementById('wa-text').textContent = waOk?'WA OK':'WA ?';
+    document.getElementById('refresh-text').innerHTML = '<span class="pulse-dot"></span>'+new Date().toLocaleTimeString();
+  }catch(e){
+    document.getElementById('gw-dot').className='stat-dot dot-red';
+    document.getElementById('gw-text').textContent='ERROR';
+  }
+}
+document.getElementById('clock').textContent = new Date().toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+
+const saved = localStorage.getItem('gw_token');
+if(saved) checkHealth();
+setInterval(checkHealth,5000);
+setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}),60000);
+</script>
+</body>
+</html>
