@@ -116,8 +116,7 @@ Consider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1
 - GitHub: https://github.com/jordan-thirkle/openclaw-winhealth
 - ClawHub Skill: https://clawhub.ai/jordan-thirkle/windows-health-monitor
 - ClawHub Plugin: https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth
-- Related PR: https://github.com/openclaw/openclaw/pull/86245 (prewarm env var)
-- Related Issue: https://github.com/openclaw/openclaw/issues/85999 (prewarm blocking)
+- OpenClaw Issue #85999: https://github.com/openclaw/openclaw/issues/85999 (prewarm blocking)
 
 ## Architecture
 
