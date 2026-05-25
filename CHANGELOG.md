@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0] — 2026-05-25
+
+### Added
+- Comprehensive test suite: 27 tests across 3 tool files (0/100 ClawHub plugins have tests)
+- CI/CD pipeline via GitHub Actions (Node 22/24/25 matrix)
+- Code coverage support via v8 provider
+- Mock SDK helpers for future contributors
+
+### Fixed
+- Fixed prewarm detection mock in health-check test (PowerShell command pattern matching)
+
 ## [1.0.0] — 2026-05-25
 
 ### Added
