@@ -56,7 +56,7 @@ export function registerHealthCheckTool(api, config) {
         api.logger.warn("winhealth: health CLI failed: " + err.message);
       }
 
-      if (config.checkWindowsTask !== false) {
+      if (config.checkWindowsTask !== false && process.platform === "win32") {
         try {
           const taskOut = await api.runtime.system.runCommandWithTimeout(
             "powershell", [
@@ -77,7 +77,7 @@ export function registerHealthCheckTool(api, config) {
         }
       }
 
-      if (config.checkPrewarm !== false) {
+      if (config.checkPrewarm !== false && process.platform === "win32") {
         try {
           const logOut = await api.runtime.system.runCommandWithTimeout(
             "powershell", [
@@ -96,7 +96,7 @@ export function registerHealthCheckTool(api, config) {
         } catch (_) {}
       }
 
-      if (config.checkBackgroundSubagents !== false) {
+      if (config.checkBackgroundSubagents !== false && process.platform === "win32") {
         try {
           const stuckOut = await api.runtime.system.runCommandWithTimeout(
             "powershell", [

@@ -52,7 +52,7 @@ async function runHealthCheck(api, config) {
       } catch (_) { api.logger.warn("winhealth: failed to parse health JSON"); }
     }
 
-    if (config.checkWindowsTask !== false) {
+    if (config.checkWindowsTask !== false && process.platform === "win32") {
       try {
         const taskOut = await api.runtime.system.runCommandWithTimeout(
           "powershell", [

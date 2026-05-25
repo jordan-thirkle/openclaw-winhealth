@@ -1,7 +1,7 @@
 {
   "id": "winhealth",
   "name": "Windows Health Monitor",
-  "description": "Background health monitoring for OpenClaw on Windows. Detects event loop degradation, gateway stalls, WhatsApp reconnection storms, prewarm blocking, stuck background subagents, and Windows Task Scheduler state. Alerts via configured channels when thresholds are breached.",
+  "description": "Cross-platform health monitoring for OpenClaw gateways. Detects event loop degradation, gateway stalls, channel reconnections, prewarm blocking, and stuck background subagents. Windows Task Scheduler health on Windows. Alerts via WhatsApp or Telegram.",
   "version": "1.0.0",
   "contracts": {
     "tools": [

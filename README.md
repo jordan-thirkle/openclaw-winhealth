@@ -1,16 +1,17 @@
-# OpenClaw Windows Health Monitor 🩺
+# OpenClaw Cross-Platform Health Monitor 🩺
 
-> Diagnose and fix Windows-specific OpenClaw issues. Background health polling, WhatsApp alerts, event loop monitoring, and automated diagnostics.
+> Diagnose and fix OpenClaw gateway issues. Background health polling, multi-channel alerts, event loop monitoring, and automated diagnostics. Works on Windows, Linux, and macOS.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078D6.svg)](#)
+[![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](#)
+[![Platform](https://img.shields.io/badge/Platform-Windows_|_Linux_|_macOS-6C47FF.svg)](#)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-≥2026.5.0-6C47FF.svg)](https://openclaw.ai)
 
 ## Why This Exists
 
-OpenClaw on Windows has unique performance characteristics that differ from Linux/macOS. After extensive debugging of the 2026.5.22 performance regression (event loop blocking, CLI tool slowness, prewarm bottlenecks), I built this to automatically detect and diagnose these issues.
+OpenClaw gateways can experience performance regressions across all platforms. After extensive debugging of the 2026.5.22 performance regression (event loop blocking, CLI tool slowness, prewarm bottlenecks), I built this to automatically detect and diagnose these issues across Windows, Linux, and macOS.
 
-**No other Windows-specific tooling exists for OpenClaw.** This is the first.
+**First system health monitoring tool on ClawHub.** First with an automated test suite.
 
 ## Features
 

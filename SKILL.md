@@ -6,13 +6,12 @@ license: MIT
 compatibility: openclaw
 metadata:
   openclaw:
-    os: ["win32"]
     emoji: "🩺"
 ---
 
 # Windows Health Monitor — OpenClaw Diagnostic Skill
 
-Diagnose and fix Windows-specific OpenClaw issues. This skill covers the most common Windows performance problems discovered through real-world debugging on Windows 11 native and WSL2 environments.
+Cross-platform diagnostics for OpenClaw gateways. Covers the most common performance problems discovered through real-world debugging on Windows 11 native, WSL2, Linux, and macOS environments.
 
 ## Quick Health Check
 
@@ -31,9 +30,35 @@ Key metrics to watch:
 - **Channel auth age**: Should be recent (< 30 minutes)
 - **Session store entries**: Growing without bound can cause startup slowness
 
-## Windows-Specific Diagnostics
+## Platform-Specific Diagnostics
 
-### 1. Scheduled Task Health
+### Linux (systemd)
+
+```bash
+# Service status
+systemctl --user status openclaw-gateway
+
+# Journal logs
+journalctl --user -u openclaw-gateway -n 50
+
+# Process health
+ps aux | grep openclaw | grep -v grep
+```
+
+### macOS (launchd)
+
+```bash
+# Service status
+launchctl list | grep openclaw
+
+# Disk usage
+du -sh ~/.openclaw
+
+# Process health
+ps aux | grep openclaw | grep -v grep
+```
+
+### Windows (Scheduled Task)
 
 ```bash
 Get-ScheduledTask -TaskName "OpenClaw Gateway" | Format-List State, LastRunTime, LastTaskResult

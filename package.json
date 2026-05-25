@@ -1,8 +1,8 @@
 {
   "name": "@jordan-thirkle/openclaw-winhealth",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "type": "module",
-  "description": "OpenClaw Windows Health Monitor — diagnose and fix Windows-specific OpenClaw issues. Background health polling, WhatsApp alerts, event loop monitoring, Windows Task Scheduler checks, prewarm detection, and diagnostic bundle generation.",
+  "description": "OpenClaw Cross-Platform Health Monitor — diagnose and fix gateway issues. Background health polling, multi-channel alerts (WhatsApp/Telegram), event loop monitoring, and automated diagnostics. Works on Windows, Linux, and macOS.",
   "keywords": [
     "openclaw",
     "plugin",

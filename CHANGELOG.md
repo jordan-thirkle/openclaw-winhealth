@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] — 2026-05-25
+
+### Added
+- Cross-platform support: Linux and macOS in addition to Windows
+- OS detection for platform-specific probes (Windows Task Scheduler, log search)
+- Cross-platform skill — works on all operating systems
+
+### Changed
+- Removed `os: ["win32"]` gate from SKILL.md
+- Platform-aware command execution in health-check and heartbeat-monitor
+- Updated descriptions, README, and badge to reflect cross-platform support
+
 ## [1.1.0] — 2026-05-25
 
 ### Added
