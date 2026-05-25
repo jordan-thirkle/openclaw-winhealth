@@ -86,6 +86,11 @@ async function runHealthCheck(api, config) {
             "openclaw", ["message", "send", "--channel", "whatsapp", "--target", config.alertTarget, "--message", alertText],
             { timeoutMs: 15000 }
           );
+        } else if (config.alertChannel === "telegram") {
+          await api.runtime.system.runCommandWithTimeout(
+            "openclaw", ["message", "send", "--channel", "telegram", "--target", config.alertTarget, "--message", alertText],
+            { timeoutMs: 15000 }
+          );
         }
       } catch (err) { api.logger.warn("winhealth: alert delivery failed: " + err.message); }
     }
