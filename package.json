@@ -33,8 +33,6 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "npm run build",
     "test": "echo \"Manual test: openclaw plugins install . && openclaw plugins inspect winhealth --runtime\"",
     "publish:clawhub": "clawhub package publish jordan-thirkle/openclaw-winhealth",
     "publish:clawhub:dry": "clawhub package publish jordan-thirkle/openclaw-winhealth --dry-run"
