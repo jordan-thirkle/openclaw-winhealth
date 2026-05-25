@@ -3,9 +3,11 @@
 > Diagnose and fix OpenClaw gateway issues. Background health polling, multi-channel alerts, event loop monitoring, and automated diagnostics. Works on Windows, Linux, and macOS.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](#)
+[![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/actions)
 [![Platform](https://img.shields.io/badge/Platform-Windows_|_Linux_|_macOS-6C47FF.svg)](#)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-≥2026.5.0-6C47FF.svg)](https://openclaw.ai)
+[![Version](https://img.shields.io/badge/Version-1.2.0-blue.svg)](https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ## Why This Exists
 

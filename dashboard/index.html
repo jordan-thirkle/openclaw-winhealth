@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WinHealth Dashboard</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --border: #1e1e2e;
+    --text: #e4e4ef;
+    --text-secondary: #8888a0;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --accent: #06b6d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    transition: all 0.3s;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem;
+  }
+  header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
+  header .status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+  
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .card-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); font-weight: 600; }
+  .card-icon { font-size: 1.25rem; }
+  
+  .metric-value { font-size: 2rem; font-weight: 700; letter-spacing: -1px; line-height: 1.2; }
+  .metric-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; }
+  
+  .health-ok { color: var(--green); }
+  .health-warn { color: var(--yellow); }
+  .health-crit { color: var(--red); }
+  
+  .bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 0.75rem; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease, background 0.5s; }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.yellow { background: var(--yellow); }
+  .bar-fill.red { background: var(--red); }
+  .bar-fill.blue { background: var(--blue); }
+  
+  .agents { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .agent-tag {
+    padding: 0.25rem 0.75rem; background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 20px;
+    font-size: 0.75rem; color: var(--purple);
+  }
+  
+  .alerts-panel { margin-top: 2rem; }
+  .alert-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1rem 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem;
+    transition: border-color 0.3s;
+  }
+  .alert-card.warning { border-left: 3px solid var(--yellow); }
+  .alert-card.critical { border-left: 3px solid var(--red); }
+  .alert-card.info { border-left: 3px solid var(--blue); }
+  
+  .refresh-time { font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 2rem; }
+  
+  .footer { text-align: center; padding: 2rem 0; color: var(--text-secondary); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+  .footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1>🩺 WinHealth Dashboard</h1>
+      <p style="color:var(--text-secondary);font-size:0.875rem;margin-top:0.25rem">OpenClaw Gateway Health Monitor</p>
+    </div>
+    <div class="status">
+      <div class="status-dot" id="status-dot"></div>
+      <span id="status-text">--</span>
+    </div>
+  </header>
+
+  <div class="grid" id="metrics-grid">
+    <!-- Populated by JS -->
+  </div>
+
+  <div class="alerts-panel">
+    <h2 style="font-size:1.25rem;margin-bottom:1rem">Recent Alerts</h2>
+    <div id="alerts-container">
+      <div class="alert-card info">
+        <span style="color:var(--green)">✅</span>
+        <span>All clear — no active alerts</span>
+      </div>
+    </div>
+  </div>
+  
+  <p class="refresh-time" id="refresh-time">--</p>
+</div>
+
+<footer class="footer">
+  <p>WinHealth Dashboard v1.2.0 · <a href="https://github.com/jordan-thirkle/openclaw-winhealth">GitHub</a> · <a href="https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth">ClawHub</a></p>
+</footer>
+
+<script>
+async function fetchHealth() {
+  const token = prompt("Enter your OpenClaw gateway token:", localStorage.getItem("gw_token") || "");
+  if (!token) return;
+  localStorage.setItem("gw_token", token);
+  
+  try {
+    const res = await fetch("http://127.0.0.1:18789/health", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    updateDashboard(data);
+  } catch(e) {
+    document.getElementById("status-dot").style.background = "var(--red)";
+    document.getElementById("status-text").textContent = "Error: " + e.message;
+  }
+}
+
+function updateDashboard(data) {
+  const el = data.eventLoop || {};
+  const p99 = el.delayP99Ms || 0;
+  const max = el.delayMaxMs || 0;
+  const util = el.utilization || 0;
+  const degraded = el.degraded;
+  
+  // Status
+  const dot = document.getElementById("status-dot");
+  const stat = document.getElementById("status-text");
+  if (degraded) { dot.style.background = "var(--red)"; stat.textContent = "DEGRADED";
+  } else if (p99 > 1000) { dot.style.background = "var(--yellow)"; stat.textContent = "WARNING";
+  } else { dot.style.background = "var(--green)"; stat.textContent = "HEALTHY"; }
+
+  const p99Class = p99 > 5000 ? "health-crit" : p99 > 1000 ? "health-warn" : "health-ok";
+  const utilPct = Math.round(util * 100);
+  const utilClass = utilPct > 80 ? "red" : utilPct > 50 ? "yellow" : "green";
+
+  const agents = data.agents || [];
+  const wa = data.channels?.whatsapp || "";
+  const waLinked = wa.includes("linked");
+  const waHealthy = wa.includes("healthy");
+
+  document.getElementById("metrics-grid").innerHTML = `
+    <div class="card">
+      <div class="card-header"><span class="card-title">Event Loop P99</span><span class="card-icon">⚡</span></div>
+      <div class="metric-value ${p99Class}">${p99.toFixed(1)}<span style="font-size:1rem;color:var(--text-secondary)">ms</span></div>
+      <div class="metric-label">Threshold: 5000ms</div>
+      <div class="bar"><div class="bar-fill ${p99Class === 'health-ok' ? 'green' : p99Class === 'health-warn' ? 'yellow' : 'red'}" style="width:${Math.min(100,(p99/5000)*100)}%"></div></div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><span class="card-title">Event Loop Max</span><span class="card-icon">📊</span></div>
+      <div class="metric-value ${max > 5000 ? 'health-warn' : 'health-ok'}">${max.toFixed(1)}<span style="font-size:1rem;color:var(--text-secondary)">ms</span></div>
+      <div class="metric-label">Largest single frame delay</div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><span class="card-title">EL Utilization</span><span class="card-icon">🔄</span></div>
+      <div class="metric-value ${utilPct > 80 ? 'health-crit' : utilPct > 50 ? 'health-warn' : 'health-ok'}">${utilPct}<span style="font-size:1rem;color:var(--text-secondary)">%</span></div>
+      <div class="metric-label">Event loop busy time</div>
+      <div class="bar"><div class="bar-fill ${utilClass}" style="width:${utilPct}%"></div></div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><span class="card-title">WhatsApp</span><span class="card-icon">💬</span></div>
+      <div class="metric-value ${waHealthy ? 'health-ok' : 'health-crit'}" style="font-size:1.25rem">
+        ${waLinked ? '✅ Linked' : '❌ Not Linked'}
+      </div>
+      <div class="metric-label">${waHealthy ? 'Connected & Healthy' : 'Check connection'}</div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><span class="card-title">Agents Active</span><span class="card-icon">🤖</span></div>
+      <div class="metric-value health-ok">${agents.length}</div>
+      <div class="agents" style="margin-top:0.75rem">${agents.map(a => `<span class="agent-tag">${a}</span>`).join('')}</div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header"><span class="card-title">Degradation</span><span class="card-icon">🔍</span></div>
+      <div class="metric-value ${degraded ? 'health-crit' : 'health-ok'}" style="font-size:1.25rem">
+        ${degraded ? '⚠️ Degraded' : '✅ Healthy'}
+      </div>
+      <div class="metric-label">${degraded ? 'Check winhealth_diagnostics' : 'All systems go'}</div>
+    </div>
+  `;
+
+  document.getElementById("refresh-time").textContent = "Last updated: " + new Date().toLocaleTimeString() + " (auto-refresh every 5s)";
+}
+
+fetchHealth();
+setInterval(fetchHealth, 5000);
+</script>
+</body>
+</html>
