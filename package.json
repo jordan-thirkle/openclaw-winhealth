@@ -33,13 +33,17 @@
     }
   },
   "scripts": {
-    "test": "echo \"Manual test: openclaw plugins install . && openclaw plugins inspect winhealth --runtime\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "publish:clawhub": "clawhub package publish jordan-thirkle/openclaw-winhealth",
     "publish:clawhub:dry": "clawhub package publish jordan-thirkle/openclaw-winhealth --dry-run"
   },
   "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "vitest": "^3.0.0",
+    "@vitest/coverage-v8": "^3.0.0"
   },
   "peerDependencies": {
     "openclaw": ">=2026.5.0"
