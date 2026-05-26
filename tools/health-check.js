@@ -29,7 +29,7 @@ export function registerHealthCheckTool(api, config) {
 
       try {
         const healthOut = await api.runtime.system.runCommandWithTimeout(
-          "openclaw", ["health", "--json"], { timeoutMs: 20000 }
+          ["openclaw", "health", "--json"], { timeoutMs: 20000 }
         );
         if (healthOut.stdout) {
           const health = JSON.parse(healthOut.stdout);
@@ -59,7 +59,7 @@ export function registerHealthCheckTool(api, config) {
       if (config.checkWindowsTask !== false && process.platform === "win32") {
         try {
           const taskOut = await api.runtime.system.runCommandWithTimeout(
-            "powershell", [
+            ["powershell",
               "-Command",
               "Get-ScheduledTask -TaskName 'OpenClaw Gateway' | Select-Object State, LastTaskResult, LastRunTime | ConvertTo-Json"
             ], { timeoutMs: 10000 }
@@ -77,14 +77,14 @@ export function registerHealthCheckTool(api, config) {
         }
       }
 
-      if (config.checkPrewarm !== false && process.platform === "win32") {
+      if (config.checkPrewarm !== false) {
         try {
-          const logOut = await api.runtime.system.runCommandWithTimeout(
-            "powershell", [
-              "-Command",
-              "$log = Get-ChildItem (Join-Path $env:USERPROFILE 'AppData\\Local\\Temp\\openclaw') -Filter '*.log' | Sort-Object LastWriteTime -Desc | Select-Object -First 1; if ($log) { Select-String 'provider auth state pre-warmed' $log.FullName | Select-Object -Last 1 | ForEach-Object { $_.Line } }"
-            ], { timeoutMs: 10000 }
-          );
+          const logCmd = process.platform === "win32"
+            ? ["powershell", "-Command",
+               "$log = Get-ChildItem (Join-Path $env:TEMP 'openclaw') -Filter '*.log' | Sort-Object LastWriteTime -Desc | Select-Object -First 1; if ($log) { Select-String 'provider auth state pre-warmed' $log.FullName | Select-Object -Last 1 | ForEach-Object { $_.Line } }"]
+            : ["sh", "-c",
+               "ls -t $TMPDIR/openclaw/*.log ~/.openclaw/logs/*.log 2>/dev/null | head -1 | xargs grep 'provider auth state pre-warmed' 2>/dev/null | tail -1"];
+          const logOut = await api.runtime.system.runCommandWithTimeout(logCmd, { timeoutMs: 10000 });
           if (logOut.stdout?.trim()) {
             snapshot.prewarm.detected = true;
             const match = logOut.stdout.match(/pre-warmed in (\d+)ms eventLoopMax=([\d.]+)ms/);
@@ -96,14 +96,14 @@ export function registerHealthCheckTool(api, config) {
         } catch (_) {}
       }
 
-      if (config.checkBackgroundSubagents !== false && process.platform === "win32") {
+      if (config.checkBackgroundSubagents !== false) {
         try {
-          const stuckOut = await api.runtime.system.runCommandWithTimeout(
-            "powershell", [
-              "-Command",
-              "$log = Get-ChildItem (Join-Path $env:USERPROFILE 'AppData\\Local\\Temp\\openclaw') -Filter '*.log' | Sort-Object LastWriteTime -Desc | Select-Object -First 1; if ($log) { $matches = Select-String 'restart.*deferred.*background task.*active' $log.FullName | Select-Object -Last 1; if ($matches) { $matches.Line } }"
-            ], { timeoutMs: 10000 }
-          );
+          const stuckCmd = process.platform === "win32"
+            ? ["powershell", "-Command",
+               "$log = Get-ChildItem (Join-Path $env:TEMP 'openclaw') -Filter '*.log' | Sort-Object LastWriteTime -Desc | Select-Object -First 1; if ($log) { $matches = Select-String 'restart.*deferred.*background task.*active' $log.FullName | Select-Object -Last 1; if ($matches) { $matches.Line } }"]
+            : ["sh", "-c",
+               "ls -t $TMPDIR/openclaw/*.log ~/.openclaw/logs/*.log 2>/dev/null | head -1 | xargs grep 'restart.*deferred.*background task.*active' 2>/dev/null | tail -1"];
+          const stuckOut = await api.runtime.system.runCommandWithTimeout(stuckCmd, { timeoutMs: 10000 });
           if (stuckOut.stdout?.trim()) {
             const countMatch = stuckOut.stdout.match(/(\d+) background task/);
             snapshot.stuckSubagents = {

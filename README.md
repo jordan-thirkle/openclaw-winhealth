@@ -3,20 +3,62 @@
 > Diagnose and fix OpenClaw gateway issues. Background health polling, multi-channel alerts, event loop monitoring, and automated diagnostics. Works on Windows, Linux, and macOS.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/actions)
+[![Tests](https://img.shields.io/badge/Tests-30/30_passed-brightgreen.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/actions)
 [![Platform](https://img.shields.io/badge/Platform-Windows_|_Linux_|_macOS-6C47FF.svg)](#)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-≥2026.5.0-6C47FF.svg)](https://openclaw.ai)
-[![Version](https://img.shields.io/badge/Version-1.5.0-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
+[![Version](https://img.shields.io/badge/Version-1.6.0-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub Release](https://img.shields.io/github/v/release/jordan-thirkle/openclaw-winhealth?color=blue)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
+
+## Demo
+
+<p align="center">
+  <a href="https://github.com/jordan-thirkle/openclaw-winhealth/releases/tag/v1.6.0">
+    <img src="docs/screenshots/showcase-demo.gif" alt="OpenClaw Health Monitor v1.6.0 Showcase" width="800">
+  </a>
+  <br>
+  <em>AI-narrated showcase walkthrough covering all v1.6.0 features, security fixes, and cross-platform parity.</em>
+  <br>
+  <strong>Watch the full video:</strong> <a href="https://youtube.com/@JordanThirkle">YouTube</a> · <a href="https://github.com/jordan-thirkle/openclaw-winhealth/releases/tag/v1.6.0">GitHub Releases</a>
+</p>
+
+### Screenshots
+
+<p align="center">
+  <strong>Dashboard Auth</strong> — localStorage + plain HTTP warnings<br>
+  <img src="docs/screenshots/dashboard-auth.png" alt="Auth modal with security warnings" width="720">
+</p>
+
+<p align="center">
+  <strong>Live Dashboard</strong> — Gauges, metrics, agents, alerts<br>
+  <img src="docs/screenshots/dashboard-live.png" alt="Live health dashboard" width="720">
+</p>
+
+### Recording Your Own Demo
+
+```powershell
+# Generate AI narration audio (Windows TTS)
+.\docs\screenshots\generate-narration.ps1
+
+# Record screen + narration
+.\docs\screenshots\produce-video.ps1
+```
+
+| Tool | Use case |
+|------|----------|
+| **FFmpeg** | Screen recording + audio overlay (`produce-video.ps1`) |
+| **PowerShell TTS** | AI voice narration generation (`generate-narration.ps1`) |
+| **OBS Studio** | Advanced scene composition |
+| **ShareX** | Quick screenshots + GIF recording |
 
 ## Privacy & Security
 
 This plugin monitors your gateway's operational health. **By default in v1.4.0, no data leaves your machine.**
 
-- **Monitoring probes** run exclusively against `http://127.0.0.1:18789` — the gateway never contacts external services during health checks
-- **External alerts** (WhatsApp/Telegram) are **off by default** (`alertChannel: "none"`). You must explicitly opt in
-- **Diagnostic bundles** are only created when you run `winhealth_diagnostics` or `openclaw gateway diagnostics export`
+- **Monitoring probes** are read-only — they check `http://127.0.0.1:18789` without modifying gateway state
+- **Diagnostic bundles** are local files created only when you run `winhealth_diagnostics` or `openclaw gateway diagnostics export`. These may contain system metadata — review before sharing
+- **Log tail extraction** (`winhealth_diagnostics --include_logs true`) reads recent gateway log messages. Logs may contain file paths, identifiers, or operational metadata — use with caution
+- **External alerts** (WhatsApp/Telegram) are **off by default** (`alertChannel: "none"`). You must explicitly opt in and understand what alert payloads contain
 - **Alert payloads** contain only: severity level, metric value, and recommended action. No API keys, conversations, or configuration data
 - **Gateway token** is read from your environment for local health probes only — never logged, persisted, or transmitted
 
@@ -46,8 +88,8 @@ OpenClaw gateways can experience performance regressions across all platforms. A
 - Optional auto-diagnose on alerts (off by default — see [SECURITY.md](./SECURITY.md))
 
 ### 🩺 Diagnostics
-- Full diagnostic bundle export (`openclaw gateway diagnostics export`)
-- Recent log tail extraction
+- Full diagnostic bundle export (`openclaw gateway diagnostics export`) — **review output before sharing**
+- Recent log tail extraction (disabled by default — enable with `include_logs: true`)
 - Channel health probe
 - Gateway status summary
 
@@ -83,6 +125,39 @@ Restart the gateway to load the plugin:
 openclaw gateway restart
 ```
 
+### Post-Install Verification
+
+After installation and restart, confirm the plugin is active:
+
+```bash
+# 1. Verify the plugin is registered
+openclaw plugins inspect winhealth --runtime --json
+
+# 2. Check the gateway log for startup
+openclaw gateway logs --tail 20 | grep "winhealth"
+
+# Expected output: "winhealth: started, polling every 5m"
+# Expected output: "winhealth: health check passed" (after ~60s initial delay)
+
+# 3. Run a manual health check
+openclaw run winhealth_check --json
+
+# Expected output: JSON with eventLoop, channels, agents, etc.
+```
+
+### Uninstall
+
+```bash
+# Remove the plugin
+openclaw plugins remove winhealth
+
+# Remove the skill
+openclaw skills remove windows-health-monitor
+
+# Restart the gateway
+openclaw gateway restart
+```
+
 ## Configuration
 
 Add to your `openclaw.json`:
@@ -98,10 +173,8 @@ Add to your `openclaw.json`:
         "config": {
           "pollIntervalMinutes": 5,
           "eventLoopThresholdMs": 5000,
-          "memoryThresholdMB": 1024,
           "alertChannel": "none",
           "alertTarget": "+15555550123",
-          "autoDiagnose": false,
           "checkPrewarm": true,
           "checkWindowsTask": true,
           "checkBackgroundSubagents": true
@@ -121,10 +194,8 @@ See [SECURITY.md](./SECURITY.md) before enabling external alert channels.
 | `enabled` | boolean | `true` | Enable/disable background monitoring |
 | `pollIntervalMinutes` | integer | `5` | Minutes between health checks (1-60) |
 | `eventLoopThresholdMs` | integer | `5000` | Event loop p99 threshold for alert (500-30000) |
-| `memoryThresholdMB` | integer | `1024` | Memory RSS threshold for alert (256-8192) |
 | `alertChannel` | string | `"none"` | Alert channel: "whatsapp", "telegram", or "none" (off by default — see SECURITY.md) |
 | `alertTarget` | string | `""` | Target for alerts (phone number or user ID). Only used when alertChannel is not "none" |
-| `autoDiagnose` | boolean | `false` | Auto-run diagnostics on critical alerts (off by default — may collect logs) |
 | `checkPrewarm` | boolean | `true` | Check for provider auth prewarm blocking |
 | `checkWindowsTask` | boolean | `true` | Check Windows Scheduled Task health |
 | `checkBackgroundSubagents` | boolean | `true` | Check for stuck background subagents |

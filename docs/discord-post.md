@@ -1,4 +1,4 @@
-# 🩺 Windows Health Monitor for OpenClaw — v1.3.0
+# 🩺 OpenClaw Health Monitor for OpenClaw — v1.3.0
 
 **First system health monitoring tool on ClawHub.** Cross-platform (Windows + Linux + macOS). Background monitoring, WhatsApp/Telegram alerts, real-time dashboard.
 

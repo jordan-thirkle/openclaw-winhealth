@@ -14,14 +14,14 @@ export function createMockApi(overrides = {}) {
   mockLogger = { info() {}, warn() {}, error() {}, debug() {}, ...overrides.logger };
   mockRuntime = {
     system: {
-      runCommandWithTimeout: async () => ({ stdout: "", stderr: "" }),
+      runCommandWithTimeout: async (argv, opts) => ({ stdout: "", stderr: "" }),
       ...overrides.system,
     },
   };
 
   return {
     id: "winhealth",
-    name: "Windows Health Monitor",
+    name: "OpenClaw Health Monitor",
     logger: mockLogger,
     pluginConfig: overrides.config ?? {},
     runtime: mockRuntime,

@@ -40,12 +40,22 @@ async function runHealthCheck(api, config) {
 
   try {
     api.logger.info("winhealth: reading OPENCLAW_GATEWAY_TOKEN for local health probe (token never transmitted externally)");
-    const healthOut = await api.runtime.system.runCommandWithTimeout(
-      "powershell", [
-        "-Command",
-        "$token = [Environment]::GetEnvironmentVariable('OPENCLAW_GATEWAY_TOKEN','User'); try { $r = Invoke-RestMethod -Uri 'http://127.0.0.1:18789/health' -Headers @{'Authorization'='Bearer ' + $token} -TimeoutSec 10; $r | ConvertTo-Json -Compress } catch { '{\"error\":\"' + $_.Exception.Message + '\"}' }"
-      ], { timeoutMs: 15000 }
-    );
+
+    let healthOut;
+    if (process.platform === "win32") {
+      healthOut = await api.runtime.system.runCommandWithTimeout(
+        ["powershell",
+          "-Command",
+          "$token = [Environment]::GetEnvironmentVariable('OPENCLAW_GATEWAY_TOKEN','User'); try { $r = Invoke-RestMethod -Uri 'http://127.0.0.1:18789/health' -Headers @{'Authorization'='Bearer ' + $token} -TimeoutSec 10; $r | ConvertTo-Json -Compress } catch { '{\"error\":\"' + $_.Exception.Message + '\"}' }"
+        ], { timeoutMs: 15000 }
+      );
+    } else {
+      healthOut = await api.runtime.system.runCommandWithTimeout(
+        ["sh", "-c",
+          "curl -s --max-time 10 -H 'Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN' http://127.0.0.1:18789/health 2>/dev/null || echo '{\"error\":\"curl failed\"}'"
+        ], { timeoutMs: 15000 }
+      );
+    }
 
     if (healthOut.stdout) {
       try {
@@ -70,7 +80,7 @@ async function runHealthCheck(api, config) {
     if (config.checkWindowsTask !== false && process.platform === "win32") {
       try {
         const taskOut = await api.runtime.system.runCommandWithTimeout(
-          "powershell", [
+          ["powershell",
             "-Command",
             "$t = Get-ScheduledTask -TaskName 'OpenClaw Gateway' -ErrorAction SilentlyContinue; if ($t -and $t.State -ne 'Ready' -and $t.State -ne 'Running') { Write-Output $t.State }"
           ], { timeoutMs: 10000 }
@@ -100,16 +110,20 @@ async function runHealthCheck(api, config) {
       try {
         if (config.alertChannel === "whatsapp") {
           await api.runtime.system.runCommandWithTimeout(
-            "openclaw", ["message", "send", "--channel", "whatsapp", "--target", config.alertTarget, "--message", alertText],
+            ["openclaw", "message", "send", "--channel", "whatsapp", "--target", config.alertTarget, "--message", alertText],
             { timeoutMs: 15000 }
           );
         } else if (config.alertChannel === "telegram") {
           await api.runtime.system.runCommandWithTimeout(
-            "openclaw", ["message", "send", "--channel", "telegram", "--target", config.alertTarget, "--message", alertText],
+            ["openclaw", "message", "send", "--channel", "telegram", "--target", config.alertTarget, "--message", alertText],
             { timeoutMs: 15000 }
           );
         }
       } catch (err) { api.logger.warn("winhealth: alert delivery failed: " + err.message); }
     }
   } catch (err) { api.logger.warn("winhealth: health check failed: " + err.message); }
+}
+
+export function stopBackgroundMonitor() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
 }

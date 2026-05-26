@@ -19,7 +19,7 @@ export function registerAlertsTool(api, _config) {
   api.registerTool({
     name: "winhealth_alerts",
     description:
-      "Manages Windows Health Monitor alerts. List active alerts, dismiss specific alerts, or clear all.",
+      "Manages OpenClaw Health Monitor alerts. List active alerts, dismiss specific alerts, or clear all.",
     parameters: {
       type: "object",
       properties: {

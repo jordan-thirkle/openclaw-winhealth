@@ -123,6 +123,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 
       <div class="card">
         <div class="card-header"><span class="card-title">Repos</span><span style="font-size:0.7rem;color:var(--text-dim)">9 total</span></div>
+        <div style="font-size:0.6rem;color:var(--text-dim);padding:0 0 0.5rem 0;border-bottom:1px solid var(--border);margin-bottom:0.5rem">ℹ️ Illustrative data — not live</div>
         <div id="repos-list"></div>
       </div>
 
@@ -158,6 +159,17 @@ document.getElementById('repos-list').innerHTML = REPOS.map(r =>
   </a>`).join('');
 
 async function checkHealth(){
+  const warned = sessionStorage.getItem('gw_token_warned');
+  if (!warned) {
+    const msg = '⚠️ Gateway Token Security Notice\n\n' +
+      'Your gateway token will be stored in browser storage and transmitted over plain HTTP to 127.0.0.1:18789.\n\n' +
+      '• localStorage persists across restarts and may be readable by same-origin scripts\n' +
+      '• Plain HTTP loopback is not encrypted — local malware or proxies could intercept\n\n' +
+      'Use only on trusted machines. See SECURITY.md for details.\n\n' +
+      'Continue?';
+    if (!confirm(msg)) return;
+    sessionStorage.setItem('gw_token_warned', '1');
+  }
   const token = sessionStorage.getItem('gw_token') || localStorage.getItem('gw_token') || prompt('Gateway token:','');
   if(!token) return;
   sessionStorage.setItem('gw_token',token);

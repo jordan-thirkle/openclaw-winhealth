@@ -1,7 +1,7 @@
 /**
- * Windows Health Monitor — OpenClaw Plugin
+ * OpenClaw Health Monitor — OpenClaw Plugin
  * 
- * Background health monitoring for OpenClaw on Windows.
+ * Background health monitoring for OpenClaw cross-platform.
  * Detects event loop degradation, gateway stalls, WhatsApp
  * reconnection storms, prewarm blocking, stuck subagents,
  * and Windows Scheduled Task state.
@@ -14,15 +14,15 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { registerHealthCheckTool } from "./tools/health-check.js";
 import { registerDiagnosticsTool } from "./tools/diagnostics.js";
 import { registerAlertsTool } from "./tools/alerts.js";
-import { startBackgroundMonitor } from "./hooks/heartbeat-monitor.js";
+import { startBackgroundMonitor, stopBackgroundMonitor } from "./hooks/heartbeat-monitor.js";
 
 export default definePluginEntry({
   id: "winhealth",
-  name: "Windows Health Monitor",
+  name: "OpenClaw Health Monitor",
   description:
-    "Background health monitoring for OpenClaw on Windows. " +
+    "Background health monitoring for OpenClaw cross-platform. " +
     "Detects event loop degradation, gateway stalls, and common " +
-    "Windows-specific issues. Alerts via configured channels.",
+    "common cross-platform issues. Alerts via configured channels.",
 
   register(api) {
     const config = (api.pluginConfig ?? {});
@@ -41,7 +41,8 @@ export default definePluginEntry({
     });
 
     api.on("gateway_stop", () => {
-      api.logger.info("winhealth: stopping background monitor");
+      stopBackgroundMonitor();
+      api.logger.info("winhealth: stopped background monitor");
     });
 
     api.logger.info(

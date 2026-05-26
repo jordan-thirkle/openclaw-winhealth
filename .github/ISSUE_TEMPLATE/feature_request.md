@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for the Windows Health Monitor
+about: Suggest an idea for the OpenClaw Health Monitor
 title: "[Feature]: "
 labels: enhancement
 assignees: ""

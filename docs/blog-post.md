@@ -1,4 +1,4 @@
-# Windows Health Monitor — From Bug to Published Plugin
+# OpenClaw Health Monitor — From Bug to Published Plugin
 
 > How debugging a 30-second gateway response time led to creating the first Windows-specific OpenClaw toolkit on ClawHub.
 
@@ -141,5 +141,21 @@ Agent Turn
 ## The Author
 
 Built by Jordan Thirkle during a single debugging session that turned into a deep understanding of OpenClaw on Windows. Licensed MIT.
+
+## v1.6.0 — The Security + Cross-Platform Release
+
+Three weeks after launch, the SkillSpector security audit identified 5 medium-severity findings. v1.6.0 addresses all of them:
+
+1. **Intent-Code Divergence** — SECURITY.md now accurately describes what data diagnostic exports contain and what alert payloads transmit
+2. **localStorage Token Warning** — Command Center shows a browser confirm() dialog warning users before they paste their gateway token
+3. **Plain HTTP Warning** — Both dashboards (index.html and command.html) now display localStorage and plain-HTTP transmission warnings as yellow hint blocks
+4. **Diagnostic Collection Scope** — All diagnostic output now prepends a "⚠️ Review before sharing" warning; SKILL.md lists every data type collected
+5. **Log Tail Extraction** — `include_logs` defaults to `false` (opt-in). A "⚠️ Log tail included" warning is shown when enabled
+
+Beyond security: the heartbeat monitor, prewarm detection, and log tail extraction now work identically on Windows, Linux, and macOS. Previously, Windows-only PowerShell commands caused failures on other platforms. Now curl, sh -c, grep, and tail provide genuine cross-platform parity.
+
+The test suite grew to 30 tests (3 new security-focused checks). The dashboard auth modal shows both localStorage and plain HTTP warnings. Post-install verification and uninstall instructions are now in the README.
+
+**Watch the showcase:** [youtube.com/@JordanThirkle](https://youtube.com/@JordanThirkle)
 
 https://jordanthirkle.com | https://github.com/jordan-thirkle

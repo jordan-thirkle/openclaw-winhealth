@@ -2,7 +2,7 @@
   "id": "winhealth",
   "name": "OpenClaw Health Monitor",
   "description": "Cross-platform health monitoring for OpenClaw gateways. Detects event loop degradation, gateway stalls, channel reconnections, prewarm blocking, and stuck background subagents. Service health checks on all platforms. External alerts via WhatsApp or Telegram are available but off by default — see SECURITY.md.",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": "Jordan Thirkle",
   "license": "MIT",
   "contracts": {
@@ -38,13 +38,7 @@
         "maximum": 30000,
         "description": "Event loop p99 threshold in ms. Alert when exceeded."
       },
-      "memoryThresholdMB": {
-        "type": "integer",
-        "default": 1024,
-        "minimum": 256,
-        "maximum": 8192,
-        "description": "Memory RSS threshold in MB. Alert when exceeded."
-      },
+
       "alertChannel": {
         "type": "string",
         "default": "none",
@@ -56,11 +50,7 @@
         "default": "",
         "description": "Target identifier for alerts (phone number for WhatsApp, user ID for Telegram). Only used when alertChannel is not 'none'."
       },
-      "autoDiagnose": {
-        "type": "boolean",
-        "default": false,
-        "description": "Automatically run full diagnostics when an alert triggers. May collect additional log data. See SECURITY.md."
-      },
+
       "checkPrewarm": {
         "type": "boolean",
         "default": true,

@@ -7,3 +7,9 @@ Thumbs.db
 
 # Test coverage
 coverage/
+
+.env
+
+# Intermediate recording artifacts
+docs/screenshots/raw-capture.mp4
+docs/screenshots/narration.wav

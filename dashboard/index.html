@@ -111,7 +111,8 @@ body { background:var(--bg); color:var(--text); font-family:var(--font); min-hei
   <div class="token-box">
     <h2>🔐 Gateway Auth</h2>
     <p class="hint">Enter your gateway token. By default, the token is stored only for this session and cleared when you close this tab. For security, avoid using this dashboard on shared computers.</p>
-    <p class="hint" style="font-size:0.65rem;color:var(--yellow);margin-bottom:0.75rem">⚠️ Storing your gateway token in localStorage persists it across browser restarts and may be readable by same-origin scripts. See <a href="https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md" style="color:var(--accent)";>SECURITY.md</a>.</p>
+    <p class="hint" style="font-size:0.65rem;color:var(--yellow);margin-bottom:0.5rem">⚠️ Storing your gateway token in localStorage persists it across browser restarts and may be readable by same-origin scripts.</p>
+    <p class="hint" style="font-size:0.65rem;color:var(--yellow);margin-bottom:0.75rem">⚠️ Your token is transmitted over plain HTTP to 127.0.0.1:18789. While loopback traffic does not cross the network, local malware, hostile proxies, or browser extensions on this machine could potentially intercept it. See <a href="https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md" style="color:var(--accent)";>SECURITY.md</a>.</p>
     <input type="password" id="token-input" placeholder="Paste your gateway token..." autocomplete="off">
     <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--text-muted);margin-bottom:1rem;cursor:pointer">
       <input type="checkbox" id="persist-check" style="accent-color:var(--accent)">

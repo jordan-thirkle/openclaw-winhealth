@@ -1,6 +1,6 @@
 ---
 name: openclaw-health-monitor
-version: 1.5.0
+version: 1.6.0
 description: Cross-platform diagnostics for OpenClaw gateways. Checks gateway health, event loop degradation, WhatsApp connectivity, service state, stuck background subagents, prewarm blocking, and generates diagnostic bundles for bug reports. See SECURITY.md for privacy disclosures. Use when: (1) Gateway feels slow or unresponsive, (2) CLI health checks take unusually long, (3) WhatsApp is not receiving messages, (4) Agent responses are delayed, (5) After OpenClaw version upgrades, (6) Routine system health check.
 license: MIT
 compatibility: openclaw
@@ -109,10 +109,10 @@ openclaw health --json | grep -E "eventLoop|p99|delayMax"
 
 ```bash
 # Cross-platform (bash/zsh):
-grep -E "provider auth state pre-warmed|eventLoopMax" ~/.openclaw/logs/*.log 2>/dev/null
+grep -E "provider auth state pre-warmed|eventLoopMax" "$TMPDIR"/openclaw/*.log ~/.openclaw/logs/*.log 2>/dev/null
 
 # Windows PowerShell:
-# Select-String "provider auth state pre-warmed|eventLoopMax" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Select-String "provider auth state pre-warmed|eventLoopMax" "$env:TEMP\openclaw\openclaw-*.log"
 ```
 
 Symptoms: CLI health taking 20+ seconds, "degraded" event loop, `startup model warmup timed out` in logs.
@@ -131,7 +131,7 @@ openclaw health --timeout 20000
 curl -s -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" --max-time 10 "http://127.0.0.1:18789/health"
 
 # Windows PowerShell:
-# $token = [System.Environment]::GetEnvironmentVariable("OPENCLAW_GATEWAY_TOKEN", "User")
+# $token = $env:OPENCLAW_GATEWAY_TOKEN
 # Invoke-RestMethod -Uri "http://127.0.0.1:18789/health" -Headers @{"Authorization"="Bearer $token"} -TimeoutSec 10
 ```
 
@@ -143,10 +143,10 @@ Background subagents can block gateway restart for 5+ minutes:
 
 ```bash
 # Cross-platform (bash/zsh):
-grep -E "restart.*deferred.*background task.*active" ~/.openclaw/logs/*.log 2>/dev/null
+grep -E "restart.*deferred.*background task.*active" "$TMPDIR"/openclaw/*.log ~/.openclaw/logs/*.log 2>/dev/null
 
 # Windows PowerShell:
-# Select-String "restart.*deferred.*background task.*active" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Select-String "restart.*deferred.*background task.*active" "$env:TEMP\openclaw\openclaw-*.log"
 ```
 
 If found: kill node processes and restart gateway. The stuck subagents will not recover.
@@ -155,10 +155,10 @@ If found: kill node processes and restart gateway. The stuck subagents will not 
 
 ```bash
 # Cross-platform (bash/zsh):
-grep -E "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" ~/.openclaw/logs/*.log 2>/dev/null
+grep -E "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" "$TMPDIR"/openclaw/*.log ~/.openclaw/logs/*.log 2>/dev/null
 
 # Windows PowerShell:
-# Select-String "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Select-String "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" "$env:TEMP\openclaw\openclaw-*.log"
 ```
 
 ### 6. Memory-LanceDB Integration
@@ -182,7 +182,7 @@ openclaw plugins list | grep "memory"
 
 ```bash
 # Cross-platform (bash/zsh):
-grep -E "provider auth state pre-warmed|startup model warmup timed out" ~/.openclaw/logs/*.log 2>/dev/null
+grep -E "provider auth state pre-warmed|startup model warmup timed out" "$TMPDIR"/openclaw/*.log ~/.openclaw/logs/*.log 2>/dev/null
 
 # Windows PowerShell:
 # Select-String "provider auth state pre-warmed|startup model warmup timed out" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
@@ -193,7 +193,12 @@ Fix (future): Add `{ "gateway": { "providerAuthPrewarm": { "enabled": false } } 
 
 ## Diagnostic Bundle Generation
 
-**WARNING:** Diagnostic bundles may contain system metadata, log-derived details, and configuration structure even after OpenClaw's built-in sanitation. Review the contents before sharing. Only share diagnostic bundles with trusted recipients for troubleshooting purposes. See [SECURITY.md](https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md#diagnostic-bundles).
+**WARNING:** This tool collects data that may contain sensitive information. The `winhealth_diagnostics` tool gathers:
+- Gateway health snapshots (event loop, memory, channel status)
+- Diagnostic export archives (stability bundle, sanitized logs, config shape)
+- Log tail extraction (when `include_logs` is enabled — defaults to disabled)
+
+Diagnostic bundles may contain system metadata, log-derived details, file paths, identifiers, and configuration structure even after OpenClaw's built-in sanitation. **Review the contents before sharing.** Only share diagnostic bundles with trusted recipients for troubleshooting purposes. See [SECURITY.md](https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md#diagnostic-bundles).
 
 For bug reports or sharing diagnostics:
 
@@ -221,7 +226,7 @@ This creates a sanitized zip at `~/.openclaw/logs/support/` with:
 1. `openclaw channels status --probe` — verify WhatsApp
 2. Check sender is in `channels.whatsapp.allowFrom`
 3. Check `dmPolicy` is not "disabled"
-4. If `loggedOut` in logs: `openclaw channels logout whatsapp; openclaw channels login whatsapp`
+4. If `loggedOut` in logs: `openclaw channels logout --channel whatsapp; openclaw channels login --channel whatsapp`
 
 ### Slow Agent Responses
 

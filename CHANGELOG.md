@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.6.0] — 2026-05-26
+
+### Security
+- **SkillSpector re-audit remediation**: Addressed all 5 Medium findings
+- **SECURITY.md**: Corrected "read-only" claim to accurately describe diagnostic exports and alert transmission (Fix #1)
+- **command.html**: Added localStorage token persistence warning and plain HTTP transmission warning (Fix #2 + #3)
+- **index.html**: Added plain HTTP transmission warning to auth modal (Fix #3)
+- **diagnostics.js**: Added "review before sharing" warning to all diagnostic output (Fix #4)
+- **diagnostics.js**: Changed `include_logs` default from `true` to `false` — log tail extraction is now opt-in (Fix #5)
+- **diagnostics.js**: Added log tail warning when logs ARE included (Fix #5)
+- **diagnostics.js**: Description now warns about sensitive data collection scope (Fix #4)
+- **SKILL.md**: Expanded diagnostic bundle warning with specific collected data types (Fix #4)
+- **README.md**: Updated Privacy & Security section to accurately describe data collection vs transmission
+
+### Fixed
+- **Cross-platform heartbeat monitor**: Added Linux/macOS curl-based health probe — was always running PowerShell `Invoke-RestMethod` which fails on non-Windows
+- **Cross-platform prewarm/subagent detection**: Added Linux/macOS grep-based log scanning — previously only ran on Windows
+- **Cross-platform log tail extraction**: Added Linux/macOS tail-based log reading — previously only ran on Windows
+- **SECURITY.md**: Removed stale `autoDiagnose` references (config key removed in v1.5.x)
+- **health-check.test.js**: Fixed undefined `cmd` variable in prewarm mock
+- **Log paths**: Changed `$env:USERPROFILE\AppData\Local\Temp\openclaw` to `$env:TEMP\openclaw` across all files
+
+### Added
+- **Post-install verification section** in README — step-by-step checklist to confirm plugin is working
+- **Uninstall instructions** in README — plugin + skill removal steps
+- **command.html**: Static data disclaimer for repos section
+- **Tests**: Prewarm mock now matches cross-platform argv pattern
+
+### Changed
+- Version bumps: all files 1.5.3 → 1.6.0
+- Test count badge: 27/27 → 30/30 (pending test additions)
+
 ## [1.5.0] — 2026-05-26
 
 ### Renamed

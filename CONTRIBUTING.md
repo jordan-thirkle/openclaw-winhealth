@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve the Windows Health Monitor. Here's how to contribute.
+Thanks for helping improve the OpenClaw Health Monitor. Here's how to contribute.
 
 ## Getting Started
 

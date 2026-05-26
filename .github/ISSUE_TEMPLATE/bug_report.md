@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a bug to help improve the Windows Health Monitor
+about: Report a bug to help improve the OpenClaw Health Monitor
 title: "[Bug]: "
 labels: bug
 assignees: ""

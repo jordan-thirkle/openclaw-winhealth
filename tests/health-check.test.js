@@ -69,8 +69,8 @@ describe("winhealth_check", () => {
   });
 
   it("generates event loop alert when degraded above threshold", async () => {
-    api.runtime.system.runCommandWithTimeout = async (cmd) => {
-      if (cmd === "openclaw") {
+    api.runtime.system.runCommandWithTimeout = async (argv) => {
+      if (argv[0] === "openclaw") {
         return createMockSystemOutput(JSON.stringify(
           createMockHealthResponse({
             eventLoop: {
@@ -97,8 +97,8 @@ describe("winhealth_check", () => {
   });
 
   it("generates critical alert when event loop is 2x threshold", async () => {
-    api.runtime.system.runCommandWithTimeout = async (cmd) => {
-      if (cmd === "openclaw") {
+    api.runtime.system.runCommandWithTimeout = async (argv) => {
+      if (argv[0] === "openclaw") {
         return createMockSystemOutput(JSON.stringify(
           createMockHealthResponse({
             eventLoop: {
@@ -121,17 +121,14 @@ describe("winhealth_check", () => {
   });
 
   it("detects prewarm blocking from log data", async () => {
-    api.runtime.system.runCommandWithTimeout = async (cmd, args) => {
-      // Return prewarm data for the PowerShell log check
-      if (cmd === "powershell") {
-        const psScript = Array.isArray(args) ? args.join(" ") : "";
-        if (psScript.includes("provider auth state pre-warmed")) {
-          return createMockSystemOutput(
-            "provider auth state pre-warmed in 68000ms eventLoopMax=25786.6ms"
-          );
-        }
+    api.runtime.system.runCommandWithTimeout = async (argv) => {
+      const fullCmd = argv.join(" ");
+      if (fullCmd.includes("provider auth state pre-warmed")) {
+        return createMockSystemOutput(
+          "provider auth state pre-warmed in 68000ms eventLoopMax=25786.6ms"
+        );
       }
-      if (cmd === "openclaw") {
+      if (argv[0] === "openclaw") {
         return createMockSystemOutput(JSON.stringify(createMockHealthResponse()));
       }
       return createMockSystemOutput();
@@ -146,14 +143,14 @@ describe("winhealth_check", () => {
   });
 
   it("detects stuck background subagents blocking restart", async () => {
-    api.runtime.system.runCommandWithTimeout = async (cmd, args, opts) => {
-      const fullCmd = Array.isArray(args) ? args.join(" ") : "";
+    api.runtime.system.runCommandWithTimeout = async (argv) => {
+      const fullCmd = argv.join(" ");
       if (fullCmd.includes("restart.*deferred.*background task")) {
         return createMockSystemOutput(
           "restart still deferred after 300188ms with 4 background task run(s) still active"
         );
       }
-      if (cmd === "openclaw") {
+      if (argv[0] === "openclaw") {
         return createMockSystemOutput(JSON.stringify(
           createMockHealthResponse()
         ));
@@ -169,14 +166,14 @@ describe("winhealth_check", () => {
   });
 
   it("correctly parses Windows Scheduled Task state", async () => {
-    api.runtime.system.runCommandWithTimeout = async (cmd, args) => {
-      const fullCmd = Array.isArray(args) ? args.join(" ") : "";
+    api.runtime.system.runCommandWithTimeout = async (argv) => {
+      const fullCmd = argv.join(" ");
       if (fullCmd.includes("Get-ScheduledTask")) {
         return createMockSystemOutput(
           JSON.stringify({ State: "Ready", LastTaskResult: 0, LastRunTime: "2026-05-25T04:00:00" })
         );
       }
-      if (cmd === "openclaw") {
+      if (argv[0] === "openclaw") {
         return createMockSystemOutput(JSON.stringify(createMockHealthResponse()));
       }
       return createMockSystemOutput();
@@ -190,8 +187,8 @@ describe("winhealth_check", () => {
   });
 
   it("preserves agent list from health output", async () => {
-    api.runtime.system.runCommandWithTimeout = async (cmd) => {
-      if (cmd === "openclaw") {
+    api.runtime.system.runCommandWithTimeout = async (argv) => {
+      if (argv[0] === "openclaw") {
         return createMockSystemOutput(JSON.stringify(
           createMockHealthResponse({ agents: ["main", "code", "local", "hooks"] })
         ));

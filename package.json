@@ -1,6 +1,6 @@
 {
   "name": "@jordan-thirkle/openclaw-winhealth",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "type": "module",
   "description": "OpenClaw Cross-Platform Health Monitor — diagnose and fix gateway issues. Background health polling, multi-channel alerts (WhatsApp/Telegram), event loop monitoring, and automated diagnostics. Works on Windows, Linux, and macOS.",
   "keywords": [
@@ -19,6 +19,7 @@
   ],
   "author": "Jordan Thirkle",
   "license": "MIT",
+  "files": ["index.js", "tools/", "hooks/", "dashboard/", "openclaw.plugin.json", "LICENSE", "README.md", "SECURITY.md"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jordan-thirkle/openclaw-winhealth.git"
@@ -39,6 +40,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "audit:security": "npm audit",
     "publish:clawhub": "clawhub package publish jordan-thirkle/openclaw-winhealth",
     "publish:clawhub:dry": "clawhub package publish jordan-thirkle/openclaw-winhealth --dry-run"
   },

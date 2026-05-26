@@ -1,0 +1,12 @@
+=== OpenClaw Health Monitor v1.6.0 ===
+Published: @jordan-thirkle/openclaw-winhealth@1.6.0
+           windows-health-monitor@1.6.0
+
+30/30 tests passing
+5 SkillSpector findings addressed
+Cross-platform heartbeat monitor
+include_logs default: false
+Post-install verification in README
+
+Install: openclaw plugins install clawhub:@jordan-thirkle/openclaw-winhealth
+More:    https://github.com/jordan-thirkle/openclaw-winhealth

@@ -1,0 +1,16 @@
+﻿
+> @jordan-thirkle/openclaw-winhealth@1.6.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90mD:/Projects/openclaw-winhealth[39m
+
+ [32mΓ£ô[39m tests/alerts.test.js [2m([22m[2m10 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/diagnostics.test.js [2m([22m[2m11 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32mΓ£ô[39m tests/health-check.test.js [2m([22m[2m9 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m30 passed[39m[22m[90m (30)[39m
+[2m   Start at [22m 22:53:33
+[2m   Duration [22m 215ms[2m (transform 107ms, setup 0ms, import 152ms, tests 18ms, environment 0ms)[22m
+

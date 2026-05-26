@@ -98,9 +98,10 @@ The WinHealth dashboard (`dashboard/index.html`) requires your gateway token to 
 The plugin activates on gateway startup (`onStartup: true`). This is necessary for continuous health monitoring. However:
 
 - Alerts are **off by default** (`alertChannel: "none"`)
-- Auto-diagnosis is **off by default** (`autoDiagnose: false`)
 - You can disable the background monitor entirely by setting `enabled: false`
-- The plugin performs read-only health probes — it does not modify your configuration or gateway state
+- Health monitoring probes are read-only — they do not modify your configuration or gateway state
+- The `winhealth_diagnostics` tool does create diagnostic archive files locally via `openclaw gateway diagnostics export`
+- When `alertChannel` is explicitly set to `"whatsapp"` or `"telegram"`, the plugin can transmit alert messages to external messaging platforms (disabled by default)
 
 ## Security Best Practices
 
@@ -112,8 +113,7 @@ The plugin activates on gateway startup (`onStartup: true`). This is necessary f
       "winhealth": {
         "enabled": true,
         "config": {
-          "alertChannel": "none",
-          "autoDiagnose": false
+          "alertChannel": "none"
         }
       }
     }
@@ -133,8 +133,7 @@ Set `alertChannel: "none"` and the plugin will monitor locally, logging alerts t
         "enabled": true,
         "config": {
           "alertChannel": "whatsapp",
-          "alertTarget": "+15555550123",
-          "autoDiagnose": false
+          "alertTarget": "+15555550123"
         }
       }
     }
@@ -153,3 +152,5 @@ Found a security issue? Please do **not** open a public issue. Instead, email th
 | Date | Auditor | Findings | Resolution |
 |---|---|---|---|
 | 2026-05-26 | NVIDIA SkillSpector v2.4.2 | 11 findings (1 High, 10 Medium) | v1.4.0 — all findings addressed |
+| 2026-05-26 | NVIDIA SkillSpector v2.4.2 (re-audit) | 5 Medium findings | v1.6.0 — intent divergence, token warnings, HTTP warning, collection scope, log tail warnings addressed |
+| 2026-05-26 | ClawHub Re-Audit (v1.6.0) | Pending — rescan triggered | Awaiting NVIDIA SkillSpector re-scan |

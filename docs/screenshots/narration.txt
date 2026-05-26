@@ -1,0 +1,21 @@
+OpenClaw Health Monitor is the first system health monitoring tool on ClawHub. It brings production-grade observability to your OpenClaw gateway.
+
+Built to catch the exact issues that cause gateway slowdowns: event loop degradation, stuck subagents, prewarm bottlenecks, and channel disconnections.
+
+In this release — version 1.6.0 — we addressed all five SkillSpector security audit findings, making this the most secure release yet.
+
+Token warnings now appear everywhere tokens can be entered. Local storage persistence and plain HTTP transmission risks are clearly disclosed.
+
+Diagnostic bundles include a review-before-sharing warning, and log tail extraction is now opt-in by default.
+
+Cross-platform support is now fully parity. The heartbeat monitor, prewarm detection, and log tail extraction work identically on Windows, Linux, and macOS.
+
+The test suite now includes thirty tests with three new security-focused checks. Every change is verified before release.
+
+The live dashboard shows real-time health metrics: event loop performance, channel status, agent count, and memory usage. Connect with your gateway token and see your gateway's health at a glance.
+
+Installation takes one command. Post-install verification confirms everything is working in three simple steps. And if you ever need to remove it, uninstall instructions are right in the README.
+
+OpenClaw Health Monitor version 1.6.0. Production-ready. Security-hardened. Cross-platform.
+
+Install it today on ClawHub.
