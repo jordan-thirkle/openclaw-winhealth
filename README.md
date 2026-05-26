@@ -6,7 +6,7 @@
 [![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/actions)
 [![Platform](https://img.shields.io/badge/Platform-Windows_|_Linux_|_macOS-6C47FF.svg)](#)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-≥2026.5.0-6C47FF.svg)](https://openclaw.ai)
-[![Version](https://img.shields.io/badge/Version-1.4.0-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
+[![Version](https://img.shields.io/badge/Version-1.4.1-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub Release](https://img.shields.io/github/v/release/jordan-thirkle/openclaw-winhealth?color=blue)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
 
@@ -122,9 +122,9 @@ See [SECURITY.md](./SECURITY.md) before enabling external alert channels.
 | `pollIntervalMinutes` | integer | `5` | Minutes between health checks (1-60) |
 | `eventLoopThresholdMs` | integer | `5000` | Event loop p99 threshold for alert (500-30000) |
 | `memoryThresholdMB` | integer | `1024` | Memory RSS threshold for alert (256-8192) |
-| `alertChannel` | string | `"whatsapp"` | Alert channel: "whatsapp", "telegram", or "none" (off by default) |
+| `alertChannel` | string | `"none"` | Alert channel: "whatsapp", "telegram", or "none" (off by default — see SECURITY.md) |
 | `alertTarget` | string | `""` | Target for alerts (phone number or user ID). Only used when alertChannel is not "none" |
-| `autoDiagnose` | boolean | `true` | Auto-run diagnostics on critical alerts (off by default — may collect logs) |
+| `autoDiagnose` | boolean | `false` | Auto-run diagnostics on critical alerts (off by default — may collect logs) |
 | `checkPrewarm` | boolean | `true` | Check for provider auth prewarm blocking |
 | `checkWindowsTask` | boolean | `true` | Check Windows Scheduled Task health |
 | `checkBackgroundSubagents` | boolean | `true` | Check for stuck background subagents |
@@ -216,8 +216,8 @@ Gateway Startup
             ├─ Prewarm detection (log grep)
             ├─ Stuck subagent detection (log grep)
             │
-            ├─ Threshold evaluation
-            └─ Alert routing (WhatsApp)
+             ├─ Threshold evaluation
+             └─ Alert routing (WhatsApp / Telegram)
 ```
 
 ## Development

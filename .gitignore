@@ -4,3 +4,6 @@ dist/
 .clawhub/
 .DS_Store
 Thumbs.db
+
+# Test coverage
+coverage/

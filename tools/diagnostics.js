@@ -46,7 +46,7 @@ export function registerDiagnosticsTool(api, _config) {
         if (channelOut.stdout) { results.push("=== Channel Status ===", channelOut.stdout, ""); }
       } catch (_) { results.push("Channel status skipped"); }
 
-      if (includeLogs) {
+      if (includeLogs && process.platform === "win32") {
         try {
           const logOut = await api.runtime.system.runCommandWithTimeout(
             "powershell", [
@@ -56,6 +56,18 @@ export function registerDiagnosticsTool(api, _config) {
           );
           if (logOut.stdout?.trim()) { results.push("=== Recent Log Messages ===", logOut.stdout, ""); }
         } catch (_) { results.push("Log tail extraction failed"); }
+      }
+
+      if (process.platform === "win32") {
+        try {
+          const taskOut = await api.runtime.system.runCommandWithTimeout(
+            "powershell", [
+              "-Command",
+              "Get-ScheduledTask -TaskName 'OpenClaw Gateway' | Select-Object State, LastRunTime, LastTaskResult | Format-List"
+            ], { timeoutMs: 10000 }
+          );
+          if (taskOut.stdout) { results.push("=== Windows Task ===", taskOut.stdout, ""); }
+        } catch (_) { results.push("Windows task check failed"); }
       }
 
       try {

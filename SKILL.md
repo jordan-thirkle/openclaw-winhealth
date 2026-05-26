@@ -1,17 +1,20 @@
 ---
 name: windows-health-monitor
-version: 1.0.0
-description: Diagnose and fix Windows-specific OpenClaw issues. Checks gateway health, event loop degradation, WhatsApp connectivity, Windows Scheduled Task state, stuck background subagents, prewarm blocking, and generates diagnostic bundles for bug reports. Use when: (1) Gateway feels slow or unresponsive, (2) CLI health checks take unusually long, (3) WhatsApp is not receiving messages, (4) Agent responses are delayed, (5) After OpenClaw version upgrades, (6) Routine system health check.
+version: 1.4.0
+description: Cross-platform diagnostics for OpenClaw gateways. Checks gateway health, event loop degradation, WhatsApp connectivity, Windows Scheduled Task state, stuck background subagents, prewarm blocking, and generates diagnostic bundles for bug reports. See SECURITY.md for privacy disclosures. Use when: (1) Gateway feels slow or unresponsive, (2) CLI health checks take unusually long, (3) WhatsApp is not receiving messages, (4) Agent responses are delayed, (5) After OpenClaw version upgrades, (6) Routine system health check.
 license: MIT
 compatibility: openclaw
 metadata:
   openclaw:
     emoji: "🩺"
+  tags: [diagnostics, monitoring, health, cross-platform, windows, linux, macos]
 ---
 
 # Windows Health Monitor — OpenClaw Diagnostic Skill
 
 Cross-platform diagnostics for OpenClaw gateways. Covers the most common performance problems discovered through real-world debugging on Windows 11 native, WSL2, Linux, and macOS environments.
+
+See **[SECURITY.md](https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md)** for data collection and privacy disclosures. External alerts are off by default in v1.4.0+.
 
 ## Quick Health Check
 

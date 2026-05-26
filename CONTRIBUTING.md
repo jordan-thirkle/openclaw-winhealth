@@ -13,9 +13,10 @@ npm install
 ## Development
 
 1. Make your changes to the `.js` files
-2. Test locally: `openclaw plugins install .`
-3. Verify: `openclaw plugins inspect winhealth --runtime --json`
-4. Submit a PR
+2. Run `npm test` to verify all 27 tests pass
+3. Test locally: `openclaw plugins install .`
+4. Verify: `openclaw plugins inspect winhealth --runtime --json`
+5. Submit a PR
 
 ## Code Style
 

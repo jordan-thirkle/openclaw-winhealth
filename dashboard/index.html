@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WinHealth v2.0 — Live Gateway Monitor</title>
+<title>WinHealth — Live Gateway Monitor</title>
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box }
 
@@ -126,7 +126,7 @@ body { background:var(--bg); color:var(--text); font-family:var(--font); min-hei
     <div class="topbar-left">
       <div class="logo">🩺</div>
       <div>
-        <h1>WinHealth v2.0</h1>
+        <h1>WinHealth Dashboard</h1>
         <div class="topbar-sub" id="last-update">--</div>
       </div>
     </div>
@@ -289,7 +289,7 @@ function render(data) {
       </div>`).join('');
   }
 
-  document.getElementById('last-update').textContent = 'Updated ' + new Date().toLocaleTimeString() + ' · v1.3.0';
+  document.getElementById('last-update').textContent = 'Updated ' + new Date().toLocaleTimeString();
 }
 
 function connect() {

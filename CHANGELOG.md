@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.4.1] — 2026-05-26
+
+### Fixed
+- **Version drift**: SKILL.md frontmatter bumped from 1.0.0 to 1.4.0
+- **SKILL.md description**: Changed "Windows-specific" to "Cross-platform" (matching body text added in v1.2.0)
+- **README config table**: Fixed wrong defaults — `alertChannel` column now says `"none"` instead of `"whatsapp"`, `autoDiagnose` now says `false` instead of `true`
+- **README architecture diagram**: Added `/ Telegram` to alert routing path
+- **Dashboard title**: Removed misleading "v2.0" branding from dashboard (was a feature name, not a project version)
+- **Dashboard version**: Footer no longer shows hardcoded `v1.3.0` string
+- **Command Center**: Removed hardcoded personal file paths (`D:/Projects/...`) from public repo
+- **Command Center**: Fixed `localStorage` token storage → now uses `sessionStorage` with `localStorage` fallback (matching WinHealth dashboard security model)
+- **alerts.js**: `clear` now reports count of actually-active alerts, not total including previously dismissed
+- **diagnostics.js**: Added `process.platform === "win32"` guard on PowerShell log extraction and task scheduler commands
+- **blog-post.md**: Updated outdated "Windows-only" and "WhatsApp-only" claims to reflect cross-platform + multi-channel support
+- **package.json keywords**: Added `cross-platform`, `linux`, `macos`, `security` (removed `win32`)
+
+### Added
+- **SKILL.md**: Added `tags` metadata field for ClawHub discoverability
+- **CHANGELOG**: Added missing v1.3.1 entry (CODE_OF_CONDUCT.md)
+- **CONTRIBUTING.md**: Added `npm test` step before PR submission
+- **.gitignore**: Added `coverage/` directory
+
+### Removed
+- `assets/` — empty directory
+- `docs/x-posts.md` — dead file, content consolidated into `social-posts.md`
+- `tsconfig.json` — dead config (project uses plain `.js`, not TypeScript build output)
+
 ## [1.4.0] — 2026-05-26
 
 ### Security
@@ -24,6 +51,11 @@
 - Config example in README now uses `alertChannel: "none"` with explanatory comment
 - Config reference table updated with new defaults and descriptions
 - `openclaw.plugin.json` version bumped to 1.4.0 with updated descriptions
+
+## [1.3.1] — 2026-05-26
+
+### Added
+- `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1)
 
 ## [1.3.0] — 2026-05-25
 

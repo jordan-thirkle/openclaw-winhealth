@@ -50,8 +50,9 @@ export function registerAlertsTool(api, _config) {
       }
 
       if (params.action === "clear") {
+        const activeBefore = getActiveAlerts().length;
         alerts.forEach(function(a) { a.dismissed = true; });
-        return { content: [{ type: "text", text: "Cleared " + alerts.length + " alerts." }] };
+        return { content: [{ type: "text", text: "Cleared " + activeBefore + " active alerts." }] };
       }
 
       return { content: [{ type: "text", text: "Unknown action: " + params.action }] };

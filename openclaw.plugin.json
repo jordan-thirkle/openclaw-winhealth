@@ -2,7 +2,7 @@
   "id": "winhealth",
   "name": "Windows Health Monitor",
   "description": "Cross-platform health monitoring for OpenClaw gateways. Detects event loop degradation, gateway stalls, channel reconnections, prewarm blocking, and stuck background subagents. Windows Task Scheduler health on Windows. External alerts via WhatsApp or Telegram are available but off by default — see SECURITY.md.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "contracts": {
     "tools": [
       "winhealth_check",

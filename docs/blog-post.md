@@ -49,7 +49,7 @@ Agent-installed diagnostics. Ask your agent:
 Background monitoring service:
 - Polls gateway health every 5 minutes
 - Detects: event loop degradation, WhatsApp disconnects, Windows task stalls, prewarm blocking, stuck subagents
-- Alerts via WhatsApp when thresholds breach
+- Alerts via WhatsApp or Telegram when thresholds breach (off by default in v1.4.0+)
 - Configurable thresholds (event loop p99, memory RSS)
 
 ## Install
@@ -91,7 +91,7 @@ openclaw plugins install clawhub:@jordan-thirkle/openclaw-winhealth
 Consider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1
 ```
 
-## Known Windows Issues Detected
+## Known Issues Detected
 
 | Issue | How |
 |---|---|
@@ -108,8 +108,8 @@ Consider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1
 - **Tools:** `winhealth_check`, `winhealth_diagnostics`, `winhealth_alerts`
 - **Hooks:** `gateway_start` (initialize monitor), `gateway_stop` (cleanup)
 - **Config:** 9 operator-configurable fields with schema validation
-- **Alerts:** WhatsApp via `openclaw message send`
-- **Platform:** Windows-only (`os: ["win32"]` in SKILL.md)
+- **Alerts:** WhatsApp / Telegram via `openclaw message send` (off by default)
+- **Platform:** Cross-platform (Windows, Linux, macOS)
 
 ## Links
 

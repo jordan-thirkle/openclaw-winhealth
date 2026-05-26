@@ -1,18 +1,21 @@
 {
   "name": "@jordan-thirkle/openclaw-winhealth",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "description": "OpenClaw Cross-Platform Health Monitor — diagnose and fix gateway issues. Background health polling, multi-channel alerts (WhatsApp/Telegram), event loop monitoring, and automated diagnostics. Works on Windows, Linux, and macOS.",
   "keywords": [
     "openclaw",
     "plugin",
-    "windows",
     "health",
     "monitoring",
     "diagnostics",
-    "win32",
+    "cross-platform",
+    "linux",
+    "macos",
+    "windows",
     "gateway",
-    "performance"
+    "performance",
+    "security"
   ],
   "author": "Jordan Thirkle",
   "license": "MIT",

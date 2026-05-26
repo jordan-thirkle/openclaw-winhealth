@@ -134,21 +134,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   </div>
   <div class="footer">
     <span class="pulse-dot"></span> <span class="refresh">Auto-refresh 5s</span> · Gateway 18789 · Canvas /winhealth · 
-    <a href="https://github.com/jordan-thirkle/openclaw-winhealth" style="color:var(--accent);text-decoration:none">WinHealth v1.3.0</a>
+    <a href="https://github.com/jordan-thirkle/openclaw-winhealth" style="color:var(--accent);text-decoration:none">WinHealth</a>
   </div>
 </div>
 
 <script>
 const REPOS = [
-  {name:'PromptForge',path:'D:/Projects/aiPromptOrganizer',tech:'Next.js',status:'active'},
-  {name:'InkNest',path:'D:/Projects/InkNest',tech:'Vercel',status:'active'},
-  {name:'JordanThirkle.com',path:'D:/Projects/JordanThirkle.com',tech:'Astro',status:'active'},
-  {name:'XbX-API',path:'D:/Projects/XbX-API',tech:'Node',status:'pending'},
-  {name:'aisoundgenerator',path:'D:/Projects/aisoundgenerator',tech:'Vite',status:'pending'},
-  {name:'CrownChaserGame',path:'D:/Projects/CrownChaserGame',tech:'Unity',status:'pending'},
-  {name:'X-Algorithm',path:'D:/Projects/X-Algorithm',tech:'Research',status:'pending'},
-  {name:'VibeGame',path:'D:/Projects/VibeGame',tech:'Browser',status:'pending'},
-  {name:'WhitenoiseApp',path:'D:/Projects/WhitenoiseApp',tech:'Flutter',status:'pending'}
+  {name:'PromptForge',tech:'Next.js',status:'active'},
+  {name:'InkNest',tech:'Vercel',status:'active'},
+  {name:'JordanThirkle.com',tech:'Astro',status:'active'},
+  {name:'XbX-API',tech:'Node',status:'pending'},
+  {name:'aisoundgenerator',tech:'Vite',status:'pending'},
+  {name:'CrownChaserGame',tech:'Unity',status:'pending'},
+  {name:'X-Algorithm',tech:'Research',status:'pending'},
+  {name:'VibeGame',tech:'Browser',status:'pending'},
+  {name:'WhitenoiseApp',tech:'Flutter',status:'pending'}
 ];
 
 document.getElementById('repos-list').innerHTML = REPOS.map(r => 
@@ -158,9 +158,9 @@ document.getElementById('repos-list').innerHTML = REPOS.map(r =>
   </a>`).join('');
 
 async function checkHealth(){
-  const token = localStorage.getItem('gw_token') || prompt('Gateway token:','');
+  const token = sessionStorage.getItem('gw_token') || localStorage.getItem('gw_token') || prompt('Gateway token:','');
   if(!token) return;
-  localStorage.setItem('gw_token',token);
+  sessionStorage.setItem('gw_token',token);
   try{
     const r = await fetch('http://127.0.0.1:18789/health',{headers:{'Authorization':'Bearer '+token}});
     if(!r.ok) throw new Error(r.status);
@@ -183,7 +183,7 @@ async function checkHealth(){
 }
 document.getElementById('clock').textContent = new Date().toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
 
-const saved = localStorage.getItem('gw_token');
+const saved = sessionStorage.getItem('gw_token') || localStorage.getItem('gw_token');
 if(saved) checkHealth();
 setInterval(checkHealth,5000);
 setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleString('en-GB',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}),60000);
