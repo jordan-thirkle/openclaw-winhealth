@@ -149,6 +149,8 @@ After npm reinstall, the `openclaw` CLI may not be available:
 
 ## Diagnostic Bundle Generation
 
+**WARNING:** Diagnostic bundles may contain system metadata, log-derived details, and configuration structure even after OpenClaw's built-in sanitation. Review the contents before sharing. Only share diagnostic bundles with trusted recipients for troubleshooting purposes. See [SECURITY.md](https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md#diagnostic-bundles).
+
 For bug reports or sharing diagnostics:
 
 ```bash
@@ -168,7 +170,7 @@ This creates a sanitized zip at `~\.openclaw\logs\support\` with:
 1. Check for stuck background tasks (see #4)
 2. Check for event loop degradation (see #2)
 3. If prewarm issue: add `OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1`
-4. Nuclear option: `Get-Process -Name "node" | Stop-Process -Force; Start-ScheduledTask -TaskName "OpenClaw Gateway"`
+4. **WARNING — Nuclear option:** `Get-Process -Name "node" | Stop-Process -Force; Start-ScheduledTask -TaskName "OpenClaw Gateway"` — **This kills ALL Node.js processes on your machine**, including unrelated applications, active development servers, and background workers. It can cause data loss in unsaved work. Use only as a last resort when the gateway is completely unresponsive and other steps have failed. Prefer: `Stop-ScheduledTask -TaskName "OpenClaw Gateway"; Start-ScheduledTask -TaskName "OpenClaw Gateway"` which only restarts the gateway task.
 
 ### WhatsApp Not Receiving Messages
 
@@ -194,3 +196,11 @@ This creates a sanitized zip at `~\.openclaw\logs\support\` with:
 ## Integration with OpenClaw WinHealth Plugin
 
 When the companion plugin (`@jordan-thirkle/openclaw-winhealth`) is installed, automated background monitoring is active. Use the tool `winhealth_check` for the current snapshot, `winhealth_diagnostics` for a full bundle, and `winhealth_alerts` to manage alert state.
+
+## Security Considerations
+
+- **External alerts are off by default** (`alertChannel: "none"`). Enable only after reviewing [SECURITY.md](https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md).
+- **Diagnostic bundles** are sanitized by OpenClaw but may still contain system metadata — review before sharing.
+- **Dashboard token** is stored in browser `sessionStorage` by default and cleared on tab close.
+- **Command execution:** Some diagnostic commands use `Get-Process -Name "node" | Stop-Process -Force` which kills all Node.js processes — use only as a last resort.
+- Full disclosure: [SkillSpector Security Audit](https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth/security-audit)

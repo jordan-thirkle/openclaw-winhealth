@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.4.0] — 2026-05-26
+
+### Security
+- **SkillSpector audit remediation**: Addressed all 11 findings (1 High, 10 Medium)
+- New `SECURITY.md` — full data collection, transmission, and token handling disclosure
+- `alertChannel` default changed from `"whatsapp"` to `"none"` (no external transmission by default)
+- `autoDiagnose` default changed from `true` to `false` (no automatic diagnostic collection)
+- Dashboard: switched from `localStorage` to `sessionStorage` for gateway token (cleared on tab close)
+- Dashboard: added security notice in auth modal and optional persistence checkbox
+- Added privacy disclosure to manifest description
+- Added `api.logger.info` statements for token access and alert dispatch in heartbeat monitor
+- Updated JSDoc on heartbeat-monitor.js to document full capabilities and token handling
+
+### Added
+- WARNING block before nuclear kill command in SKILL.md (kills ALL Node.js processes)
+- WARNING block before diagnostic bundle export in SKILL.md (may contain system metadata)
+- Security Considerations section in SKILL.md
+- Privacy & Security section in README.md (before Features)
+- SkillSpector audit badge and link in README.md
+
+### Changed
+- Config example in README now uses `alertChannel: "none"` with explanatory comment
+- Config reference table updated with new defaults and descriptions
+- `openclaw.plugin.json` version bumped to 1.4.0 with updated descriptions
+
 ## [1.3.0] — 2026-05-25
 
 ### Fixed

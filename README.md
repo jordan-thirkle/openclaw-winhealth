@@ -6,9 +6,23 @@
 [![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/actions)
 [![Platform](https://img.shields.io/badge/Platform-Windows_|_Linux_|_macOS-6C47FF.svg)](#)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-≥2026.5.0-6C47FF.svg)](https://openclaw.ai)
-[![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
+[![Version](https://img.shields.io/badge/Version-1.4.0-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub Release](https://img.shields.io/github/v/release/jordan-thirkle/openclaw-winhealth?color=blue)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
+
+## Privacy & Security
+
+This plugin monitors your gateway's operational health. **By default in v1.4.0, no data leaves your machine.**
+
+- **Monitoring probes** run exclusively against `http://127.0.0.1:18789` — the gateway never contacts external services during health checks
+- **External alerts** (WhatsApp/Telegram) are **off by default** (`alertChannel: "none"`). You must explicitly opt in
+- **Diagnostic bundles** are only created when you run `winhealth_diagnostics` or `openclaw gateway diagnostics export`
+- **Alert payloads** contain only: severity level, metric value, and recommended action. No API keys, conversations, or configuration data
+- **Gateway token** is read from your environment for local health probes only — never logged, persisted, or transmitted
+
+Read the full disclosure: **[SECURITY.md](./SECURITY.md)** | [SkillSpector Audit](https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth/security-audit)
+
+---
 
 ## Why This Exists
 
@@ -26,10 +40,10 @@ OpenClaw gateways can experience performance regressions across all platforms. A
 - **CLI vs HTTP delta** — the key discovery: CLI tool can be 20-30x slower than HTTP endpoint on Windows
 
 ### 🚨 Alerts
-- WhatsApp and Telegram alerts when thresholds breach
+- WhatsApp and Telegram alerts when thresholds breach **(off by default — requires explicit opt-in)**
 - Configurable thresholds (event loop p99, memory RSS)
 - Alert management (list, dismiss, clear)
-- Auto-diagnose on critical alerts
+- Optional auto-diagnose on alerts (off by default — see [SECURITY.md](./SECURITY.md))
 
 ### 🩺 Diagnostics
 - Full diagnostic bundle export (`openclaw gateway diagnostics export`)
@@ -74,6 +88,7 @@ openclaw gateway restart
 Add to your `openclaw.json`:
 
 ```json5
+// Minimal config — local monitoring only, no external transmission:
 {
   "plugins": {
     "allow": ["winhealth"],
@@ -84,9 +99,9 @@ Add to your `openclaw.json`:
           "pollIntervalMinutes": 5,
           "eventLoopThresholdMs": 5000,
           "memoryThresholdMB": 1024,
-          "alertChannel": "whatsapp",
+          "alertChannel": "none",
           "alertTarget": "+15555550123",
-          "autoDiagnose": true,
+          "autoDiagnose": false,
           "checkPrewarm": true,
           "checkWindowsTask": true,
           "checkBackgroundSubagents": true
@@ -97,6 +112,8 @@ Add to your `openclaw.json`:
 }
 ```
 
+See [SECURITY.md](./SECURITY.md) before enabling external alert channels.
+
 ### Config Reference
 
 | Field | Type | Default | Description |
@@ -105,9 +122,9 @@ Add to your `openclaw.json`:
 | `pollIntervalMinutes` | integer | `5` | Minutes between health checks (1-60) |
 | `eventLoopThresholdMs` | integer | `5000` | Event loop p99 threshold for alert (500-30000) |
 | `memoryThresholdMB` | integer | `1024` | Memory RSS threshold for alert (256-8192) |
-| `alertChannel` | string | `"whatsapp"` | Alert channel: "whatsapp", "telegram", or "none" |
-| `alertTarget` | string | `""` | Target for alerts (phone number or user ID) |
-| `autoDiagnose` | boolean | `true` | Auto-run diagnostics on critical alerts |
+| `alertChannel` | string | `"whatsapp"` | Alert channel: "whatsapp", "telegram", or "none" (off by default) |
+| `alertTarget` | string | `""` | Target for alerts (phone number or user ID). Only used when alertChannel is not "none" |
+| `autoDiagnose` | boolean | `true` | Auto-run diagnostics on critical alerts (off by default — may collect logs) |
 | `checkPrewarm` | boolean | `true` | Check for provider auth prewarm blocking |
 | `checkWindowsTask` | boolean | `true` | Check Windows Scheduled Task health |
 | `checkBackgroundSubagents` | boolean | `true` | Check for stuck background subagents |

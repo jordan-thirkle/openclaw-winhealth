@@ -1,5 +1,19 @@
 /**
- * Background health monitor hook
+ * Background health monitor hook.
+ *
+ * Capabilities:
+ * 1. Periodic gateway health polling (HTTP probe to localhost)
+ * 2. Event loop degradation detection with configurable thresholds
+ * 3. Windows Scheduled Task state monitoring
+ * 4. Optional external alert delivery (WhatsApp/Telegram) — gated behind
+ *    config.alertChannel !== "none" AND config.alertTarget is set.
+ *    Disabled by default. See SECURITY.md for full disclosure.
+ *
+ * Token handling:
+ * OPENCLAW_GATEWAY_TOKEN is read from the environment for localhost health
+ * probes only. It is never logged, persisted, or transmitted externally.
+ * It is passed to a child PowerShell process that terminates after the
+ * health check completes.
  */
 
 import { addAlert, getActiveAlerts } from "../tools/alerts.js";
@@ -25,6 +39,7 @@ async function runHealthCheck(api, config) {
   let degraded = false;
 
   try {
+    api.logger.info("winhealth: reading OPENCLAW_GATEWAY_TOKEN for local health probe (token never transmitted externally)");
     const healthOut = await api.runtime.system.runCommandWithTimeout(
       "powershell", [
         "-Command",
@@ -79,6 +94,8 @@ async function runHealthCheck(api, config) {
         latestAlerts.map(function(a) { return "[" + a.severity.toUpperCase() + "] " + a.message; }).join("\n") +
         "\n\nRun 'winhealth_check' or 'winhealth_diagnostics' for details." +
         (config.checkPrewarm !== false ? "\n\nConsider: OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1" : "");
+
+      api.logger.info("winhealth: alert triggered — delivering to " + config.alertChannel + " (target: " + config.alertTarget + ")");
 
       try {
         if (config.alertChannel === "whatsapp") {
