@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.5.0] — 2026-05-26
+
+### Renamed
+- **Plugin name**: "Windows Health Monitor" → "OpenClaw Health Monitor" (plugin was cross-platform since v1.2.0)
+- **Skill name**: `windows-health-monitor` → `openclaw-health-monitor`
+- **SKILL.md H1**: `# Windows Health Monitor` → `# OpenClaw Health Monitor — Cross-Platform Diagnostic Skill`
+
+### Fixed
+- **SKILL.md: cross-platform command parity** — all 12 PowerShell-exclusive commands now have bash/zsh/grep equivalents as the primary command, with PowerShell fallbacks commented as secondary
+- **SKILL.md: missing `### 1.` section** — added `### 1. Gateway Service Health` section before platform-specific diagnostics
+- **SKILL.md: broken log paths** — `$env:USERPROFILE\AppData\Local\Temp\openclaw\` replaced with `~/.openclaw/logs/` (forward slashes, cross-platform)
+- **SKILL.md: diagnostic bundle path** — `~\.openclaw\logs\support\` → `~/.openclaw/logs/support/`
+- **SKILL.md: removed `### 8. npm Reinstall Issues`** — off-topic content unrelated to health diagnostics
+- **README: inaccurate test claim** — "First with an automated test suite" → "27 automated tests with CI/CD pipeline" (other ClawHub plugins also have test suites)
+
+### Added
+- **README: Web Dashboard section** — prerequisites (canvas plugin), step-by-step setup, access URLs
+- **CONTRIBUTING.md: dashboard deployment note + cross-platform testing steps**
+- **openclaw.plugin.json**: added `author` and `license` fields
+
+### Changed
+- Version bumps: SKILL.md 1.4.0→1.5.0, package.json 1.4.1→1.5.0, plugin.json 1.4.1→1.5.0
+- SKILL.md description: removed "Windows Scheduled Task state" from frontmatter, made generic
+
 ## [1.4.1] — 2026-05-26
 
 ### Fixed

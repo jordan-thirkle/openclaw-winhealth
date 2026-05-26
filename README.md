@@ -6,7 +6,7 @@
 [![Tests](https://img.shields.io/badge/Tests-27/27_passed-brightgreen.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/actions)
 [![Platform](https://img.shields.io/badge/Platform-Windows_|_Linux_|_macOS-6C47FF.svg)](#)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-≥2026.5.0-6C47FF.svg)](https://openclaw.ai)
-[![Version](https://img.shields.io/badge/Version-1.4.1-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
+[![Version](https://img.shields.io/badge/Version-1.5.0-blue.svg)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![GitHub Release](https://img.shields.io/github/v/release/jordan-thirkle/openclaw-winhealth?color=blue)](https://github.com/jordan-thirkle/openclaw-winhealth/releases)
 
@@ -28,7 +28,7 @@ Read the full disclosure: **[SECURITY.md](./SECURITY.md)** | [SkillSpector Audit
 
 OpenClaw gateways can experience performance regressions across all platforms. After extensive debugging of the 2026.5.22 performance regression (event loop blocking, CLI tool slowness, prewarm bottlenecks), I built this to automatically detect and diagnose these issues across Windows, Linux, and macOS.
 
-**First system health monitoring tool on ClawHub.** First with an automated test suite.
+**First system health monitoring tool on ClawHub.** 27 automated tests with CI/CD pipeline.
 
 ## Features
 
@@ -166,6 +166,30 @@ Get-ScheduledTask -TaskName "OpenClaw Gateway"
 # Full diagnostic export
 openclaw gateway diagnostics export
 ```
+
+### Web Dashboard
+
+The plugin includes a live health dashboard with radial gauges, metrics cards, and alert history.
+
+**Prerequisites:**
+- The [canvas](https://clawhub.ai) plugin must be installed and enabled in your OpenClaw config
+- Canvas host root configured (e.g., `"host": { "root": "~/.openclaw/workspace/canvas" }`)
+
+**Setup:**
+```bash
+# Clone the repo to get the dashboard files
+git clone https://github.com/jordan-thirkle/openclaw-winhealth.git
+# Copy the WinHealth dashboard to your canvas host root
+cp openclaw-winhealth/dashboard/index.html ~/.openclaw/workspace/canvas/winhealth/index.html
+# Copy the Command Center dashboard (optional)
+cp openclaw-winhealth/dashboard/command.html ~/.openclaw/workspace/canvas/command/index.html
+```
+
+**Access:**
+- WinHealth Dashboard: `http://127.0.0.1:18789/__openclaw__/canvas/winhealth/`
+- Command Center: `http://127.0.0.1:18789/__openclaw__/canvas/command/`
+
+The dashboard uses **sessionStorage** by default — your gateway token is cleared when you close the tab. Enable "Remember token" to persist it across sessions. See [SECURITY.md](./SECURITY.md) for dashboard security details.
 
 ## Alert Examples
 

@@ -1,7 +1,7 @@
 ---
-name: windows-health-monitor
-version: 1.4.0
-description: Cross-platform diagnostics for OpenClaw gateways. Checks gateway health, event loop degradation, WhatsApp connectivity, Windows Scheduled Task state, stuck background subagents, prewarm blocking, and generates diagnostic bundles for bug reports. See SECURITY.md for privacy disclosures. Use when: (1) Gateway feels slow or unresponsive, (2) CLI health checks take unusually long, (3) WhatsApp is not receiving messages, (4) Agent responses are delayed, (5) After OpenClaw version upgrades, (6) Routine system health check.
+name: openclaw-health-monitor
+version: 1.5.0
+description: Cross-platform diagnostics for OpenClaw gateways. Checks gateway health, event loop degradation, WhatsApp connectivity, service state, stuck background subagents, prewarm blocking, and generates diagnostic bundles for bug reports. See SECURITY.md for privacy disclosures. Use when: (1) Gateway feels slow or unresponsive, (2) CLI health checks take unusually long, (3) WhatsApp is not receiving messages, (4) Agent responses are delayed, (5) After OpenClaw version upgrades, (6) Routine system health check.
 license: MIT
 compatibility: openclaw
 metadata:
@@ -10,7 +10,7 @@ metadata:
   tags: [diagnostics, monitoring, health, cross-platform, windows, linux, macos]
 ---
 
-# Windows Health Monitor — OpenClaw Diagnostic Skill
+# OpenClaw Health Monitor — Cross-Platform Diagnostic Skill
 
 Cross-platform diagnostics for OpenClaw gateways. Covers the most common performance problems discovered through real-world debugging on Windows 11 native, WSL2, Linux, and macOS environments.
 
@@ -32,6 +32,30 @@ Key metrics to watch:
 - **WhatsApp status**: Should say "linked, running, connected, healthy"
 - **Channel auth age**: Should be recent (< 30 minutes)
 - **Session store entries**: Growing without bound can cause startup slowness
+
+### 1. Gateway Service Health
+
+Check if the gateway process is running:
+
+```bash
+# Cross-platform (bash/zsh):
+ps aux | grep openclaw | grep -v grep
+
+# Windows PowerShell:
+# Get-Process -Name "node" | Where-Object { $_.CommandLine -like "*openclaw*" }
+```
+
+Verify the gateway is listening on its health port:
+
+```bash
+# Cross-platform (bash/zsh):
+curl -s --max-time 5 http://127.0.0.1:18789/health
+
+# Windows PowerShell:
+# Invoke-RestMethod -Uri "http://127.0.0.1:18789/health" -TimeoutSec 5
+```
+
+Platform-specific service management commands below.
 
 ## Platform-Specific Diagnostics
 
@@ -73,14 +97,22 @@ Get-ScheduledTask -TaskName "OpenClaw Gateway" | Format-List State, LastRunTime,
 
 ### 2. Event Loop Degradation
 
-The most common Windows performance regression appears in 2026.5.x:
+The most common performance regression appears in 2026.5.x:
 
 ```bash
-# Check current event loop status
-openclaw health --json | Select-String "eventLoop|p99|delayMax"
+# Cross-platform (bash/zsh):
+openclaw health --json | grep -E "eventLoop|p99|delayMax"
 
-# Check for prewarm blocking (2026.5.22+)
-Select-String "provider auth state pre-warmed|eventLoopMax" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Windows PowerShell:
+# openclaw health --json | Select-String "eventLoop|p99|delayMax"
+```
+
+```bash
+# Cross-platform (bash/zsh):
+grep -E "provider auth state pre-warmed|eventLoopMax" ~/.openclaw/logs/*.log 2>/dev/null
+
+# Windows PowerShell:
+# Select-String "provider auth state pre-warmed|eventLoopMax" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
 ```
 
 Symptoms: CLI health taking 20+ seconds, "degraded" event loop, `startup model warmup timed out` in logs.
@@ -92,10 +124,15 @@ A key diagnostic finding: the CLI health command can be 20-30x slower than the H
 ```bash
 # CLI health (slow on Windows)
 openclaw health --timeout 20000
+```
 
-# HTTP health (fast — true gateway performance)
-$token = [System.Environment]::GetEnvironmentVariable("OPENCLAW_GATEWAY_TOKEN", "User")
-Invoke-RestMethod -Uri "http://127.0.0.1:18789/health" -Headers @{"Authorization"="Bearer $token"} -TimeoutSec 10
+```bash
+# Cross-platform (bash/zsh):
+curl -s -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" --max-time 10 "http://127.0.0.1:18789/health"
+
+# Windows PowerShell:
+# $token = [System.Environment]::GetEnvironmentVariable("OPENCLAW_GATEWAY_TOKEN", "User")
+# Invoke-RestMethod -Uri "http://127.0.0.1:18789/health" -Headers @{"Authorization"="Bearer $token"} -TimeoutSec 10
 ```
 
 If CLI is slow but HTTP is fast (< 500ms): gateway is healthy, CLI tool has Windows WebSocket auth overhead.
@@ -105,17 +142,23 @@ If CLI is slow but HTTP is fast (< 500ms): gateway is healthy, CLI tool has Wind
 Background subagents can block gateway restart for 5+ minutes:
 
 ```bash
-# Search gateway log for deferred restart
-Select-String "restart.*deferred.*background task.*active" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Cross-platform (bash/zsh):
+grep -E "restart.*deferred.*background task.*active" ~/.openclaw/logs/*.log 2>/dev/null
+
+# Windows PowerShell:
+# Select-String "restart.*deferred.*background task.*active" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
 ```
 
-If found: kill node.exe processes and restart gateway. The stuck subagents will not recover.
+If found: kill node processes and restart gateway. The stuck subagents will not recover.
 
 ### 5. WhatsApp Reconnection Storm
 
 ```bash
-# Check for reconnection patterns
-Select-String "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Cross-platform (bash/zsh):
+grep -E "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" ~/.openclaw/logs/*.log 2>/dev/null
+
+# Windows PowerShell:
+# Select-String "WebSocket.*closed.*408|Retry.*\/12|timed out waiting for.*WhatsApp" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
 ```
 
 ### 6. Memory-LanceDB Integration
@@ -126,8 +169,11 @@ If memory-lancedb is installed but not configured:
 - Fix: revert slot to `memory-core` or configure embeddings
 
 ```bash
-# Check active memory plugin
-openclaw plugins list | Select-String "memory"
+# Cross-platform (bash/zsh):
+openclaw plugins list | grep "memory"
+
+# Windows PowerShell:
+# openclaw plugins list | Select-String "memory"
 ```
 
 ### 7. Provider Auth Prewarm Blocking
@@ -135,20 +181,15 @@ openclaw plugins list | Select-String "memory"
 2026.5.22 introduced provider auth prewarming that can block for 30-79s:
 
 ```bash
-# Check prewarm metrics
-Select-String "provider auth state pre-warmed|startup model warmup timed out" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
+# Cross-platform (bash/zsh):
+grep -E "provider auth state pre-warmed|startup model warmup timed out" ~/.openclaw/logs/*.log 2>/dev/null
+
+# Windows PowerShell:
+# Select-String "provider auth state pre-warmed|startup model warmup timed out" "$env:USERPROFILE\AppData\Local\Temp\openclaw\openclaw-*.log"
 ```
 
-Fix: Set `OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1` in gateway.cmd or user environment variables.
+Fix: Set `OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1` in gateway.cmd or environment variables.
 Fix (future): Add `{ "gateway": { "providerAuthPrewarm": { "enabled": false } } }` to config (pending PR merge).
-
-### 8. npm Reinstall Issues
-
-After npm reinstall, the `openclaw` CLI may not be available:
-- npm install removes old package first, then installs new
-- During this window, the CLI command is unavailable
-- Gateway scheduled task is unaffected (uses direct file paths)
-- Fix: Wait for npm install to complete, or `npm link openclaw`
 
 ## Diagnostic Bundle Generation
 
@@ -160,7 +201,7 @@ For bug reports or sharing diagnostics:
 openclaw gateway diagnostics export
 ```
 
-This creates a sanitized zip at `~\.openclaw\logs\support\` with:
+This creates a sanitized zip at `~/.openclaw/logs/support/` with:
 - Stability bundle (event loop, memory, session state)
 - Sanitized log metadata
 - Gateway status/health snapshots
@@ -173,7 +214,7 @@ This creates a sanitized zip at `~\.openclaw\logs\support\` with:
 1. Check for stuck background tasks (see #4)
 2. Check for event loop degradation (see #2)
 3. If prewarm issue: add `OPENCLAW_SKIP_PROVIDER_AUTH_PREWARM=1`
-4. **WARNING — Nuclear option:** `Get-Process -Name "node" | Stop-Process -Force; Start-ScheduledTask -TaskName "OpenClaw Gateway"` — **This kills ALL Node.js processes on your machine**, including unrelated applications, active development servers, and background workers. It can cause data loss in unsaved work. Use only as a last resort when the gateway is completely unresponsive and other steps have failed. Prefer: `Stop-ScheduledTask -TaskName "OpenClaw Gateway"; Start-ScheduledTask -TaskName "OpenClaw Gateway"` which only restarts the gateway task.
+4. **WARNING — Nuclear option:** `pkill -9 node` — **This kills ALL Node.js processes on your machine**, including unrelated applications, active development servers, and background workers. It can cause data loss in unsaved work. Use only as a last resort when the gateway is completely unresponsive and other steps have failed. Prefer restarting only the gateway: `systemctl --user restart openclaw-gateway` (Linux), `launchctl kickstart -k gui/$UID/com.openclaw.gateway` (macOS), or `Stop-ScheduledTask -TaskName "OpenClaw Gateway"; Start-ScheduledTask -TaskName "OpenClaw Gateway"` (Windows).
 
 ### WhatsApp Not Receiving Messages
 
@@ -205,5 +246,5 @@ When the companion plugin (`@jordan-thirkle/openclaw-winhealth`) is installed, a
 - **External alerts are off by default** (`alertChannel: "none"`). Enable only after reviewing [SECURITY.md](https://github.com/jordan-thirkle/openclaw-winhealth/blob/main/SECURITY.md).
 - **Diagnostic bundles** are sanitized by OpenClaw but may still contain system metadata — review before sharing.
 - **Dashboard token** is stored in browser `sessionStorage` by default and cleared on tab close.
-- **Command execution:** Some diagnostic commands use `Get-Process -Name "node" | Stop-Process -Force` which kills all Node.js processes — use only as a last resort.
+- **Command execution:** Some diagnostic commands use `pkill -9 node` which kills all Node.js processes — use only as a last resort.
 - Full disclosure: [SkillSpector Security Audit](https://clawhub.ai/plugins/@jordan-thirkle/openclaw-winhealth/security-audit)

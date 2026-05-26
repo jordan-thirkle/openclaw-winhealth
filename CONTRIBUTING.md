@@ -29,10 +29,11 @@ npm install
 ## Testing
 
 Before submitting:
-1. Test on Windows 10/11 native
-2. Run `openclaw plugins inspect winhealth --runtime --json`
-3. Verify all three tools register correctly
-4. Include reproduction steps for any issues
+1. Run `npm test` to verify all 27 tests pass
+2. Test on at least two platforms (Windows + Linux or macOS)
+3. Run `openclaw plugins inspect winhealth --runtime --json` to verify tool registration
+4. Verify the dashboard loads and shows live data when canvas is configured
+5. Include reproduction steps for any issues
 
 ## Pull Request Process
 
@@ -41,6 +42,8 @@ Before submitting:
 3. Make your changes
 4. Test thoroughly
 5. Submit a PR with a clear description
+
+The `dashboard/` directory contains static HTML assets that must be manually deployed to the canvas host root. Dashboard changes should be tested in conjunction with the canvas plugin before submitting.
 
 ## License
 

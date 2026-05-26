@@ -8,7 +8,9 @@
 ## In Progress
 - [x] v1.3.0 — Dogfood & Ship: End-to-end testing, screenshots, republish, blog post
 - [x] v1.4.0 — Security Audit: SkillSpector remediation, SECURITY.md, privacy defaults, sessionStorage
-- [ ] v1.5.0 — ClawHub Republish: v1.4.0 on ClawHub with SEO/description updates
+- [x] v1.4.1 — Repo Audit: Version consistency, dead files, documentation polish
+- [x] v1.5.0 — Cross-Platform Reality: Renamed to OpenClaw Health Monitor, SKILL.md cross-platform commands, dashboard docs
+- [ ] v1.5.1 — ClawHub Republish: Publish v1.5.0 to ClawHub, verify pages, fix license display
 
 ## Planned
 - [ ] v2.0.0 — Dashboard UI: Canvas/A2UI health visualization, session state
